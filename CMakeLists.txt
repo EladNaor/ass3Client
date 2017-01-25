@@ -6,8 +6,8 @@ message(STATUS "start running cmake...")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Weffc++ -std=c++11 ")
 
-set(Boost_INCLUDE_DIR "C:/Program Files/boost_1_63_0/include/boost-1_63/")
-set(Boost_LIBRARY_DIR "C:/Program Files/boost_1_63_0/lib/")
+set(Boost_INCLUDE_DIR "C:/Program Files/boost/include/boost-1_63/")
+set(Boost_LIBRARY_DIR "C:/Program Files/boost/lib/")
 
 set(BOOST_ROOT "C:/Program Files/boost_1_63_0/")
 
