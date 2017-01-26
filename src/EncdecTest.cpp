@@ -23,7 +23,7 @@ int main (int argc, char *argv[]) {
     EncdecTest test;
 //  test.testRRQDecode(encdec); // 1
 //  test.testWRQDecode(encdec); // 2
-//  test.testDataDecode(encdec); // 3
+  test.testDataDecode(encdec); // 3
 //  test.testDataEncode(encdec); // 3
 //  test.testACKDecode(encdec); // 4
 // 	test.testACKEncode(encdec); // 4
@@ -54,7 +54,7 @@ vector<char> EncdecTest::arrToVec(char* c){
 
 
 //
-//void EncdecTest::testDataDecode (EncoderDecoder& encdec){
+//void EncdecTest::testDataDecode (MessageEncDec& encdec){
 //    vector<char> b = {0,3,0,2,1,5,1,2}; // 0,2 is the packetSize(2), 1,5 is the blockNum(261)
 //    char* x = (char*)03021512;
 //    //cout << b << endl;
@@ -75,7 +75,7 @@ vector<char> EncdecTest::arrToVec(char* c){
 //    cout << "FLAG DataDecode 2" << endl;
 //    DataPacket *res1= dynamic_cast<DataPacket*>(res);
 //    cout << "FLAG DataDecode 3" << endl;
-//    short opcode=res1->getOpcode();
+//    short opcode=res1->getOpCode();
 //    short packetSize=res1->getPacketSize();
 //    short blockNum=res1->getBlockNum();
 //    vector<char> dataBytes=res1->getData();
@@ -88,7 +88,7 @@ vector<char> EncdecTest::arrToVec(char* c){
 
 
 
-void EncdecTest::testDataDecode (EncoderDecoder& encdec){
+void EncdecTest::testDataDecode (MessageEncDec& encdec){
     vector<char> b = {0,3,0,5,1,5,1,2,3,4,5}; // 0,5 is the packetSize(5), 1,5 is the blockNum(261)
     // bytesToShort({0,5})=(short)5, bytesToShort({1,5})=(short)261
     Packet* res=nullptr;
@@ -96,7 +96,7 @@ void EncdecTest::testDataDecode (EncoderDecoder& encdec){
     printArr(b);
     cout << "FLAG DataDecode 1" << endl;
     for (int i=0; i<b.size(); i++)
-        res=encdec.decodeNextByte(b[i]);
+        res=encdec.decodeNextByte(b.at(i));
     cout << "FLAG DataDecode 2" << endl;
     Packet *res1= dynamic_cast<Packet*>(res);
     cout << "FLAG DataDecode 3" << endl;
@@ -111,12 +111,12 @@ void EncdecTest::testDataDecode (EncoderDecoder& encdec){
     printArr(dataBytes);
 }
 
-void EncdecTest::testDataEncode (EncoderDecoder& encdec){
+void EncdecTest::testDataEncode (MessageEncDec& encdec){
     vector<char> b = {1,2,3,4,5};
     Packet *packet = new Packet();
     packet->createDATApacket(((short)5), ((short)261), b);
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " is the Opcode "<< packet->getPacketSize() << " is the packetSize " << packet->getBlockNum() << " is the Block Num " <<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " is the Opcode "<< packet->getPacketSize() << " is the packetSize " << packet->getBlockNumber() << " is the Block Num " <<endl;
     cout<<"The data arr is " <<endl;
     printArr(b);
     cout<<"Output: "<<endl;
@@ -126,73 +126,79 @@ void EncdecTest::testDataEncode (EncoderDecoder& encdec){
 }
 
 
-void EncdecTest::testDISCDecode (EncoderDecoder& encdec){
+void EncdecTest::testDISCDecode (MessageEncDec& encdec){
     vector<char> b = {0,10};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    DiscPacket *res1= dynamic_cast<DiscPacket*>(res);
-    short opcode=res1->getOpcode();
+    Packet *res1= new Packet();
+    res1->createDISCpacket();
+    short opcode=res1->getOpCode();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode << endl;
 }
 
-void EncdecTest::testDISCEncode (EncoderDecoder& encdec){
-    DiscPacket *packet = new DiscPacket((short)10);
+void EncdecTest::testDISCEncode (MessageEncDec& encdec){
+    Packet *packet = new Packet();
+    packet->createDISCpacket();
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " is the Opcode"<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " is the Opcode"<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,10}
     cout<<"The output should be {0,10}"<<endl;
 }
 
-void EncdecTest::testBCastDecode (EncoderDecoder& encdec){
+void EncdecTest::testBCastDecode (MessageEncDec& encdec){
     vector<char> b = {0,9,1,66,67,97,115,116,83,116,114,0};
     // popString({66,67,97,115,116,83,116,114})=(String)"BCastStr"
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    BCastPacket *res1= dynamic_cast<BCastPacket*>(res);
-    short opcode=res1->getOpcode();
-    short deleted_or_added=res1->getDelOrAdd();
-    string Filename=res1->getFileName();
+    Packet *res1= new Packet();
+    res1->createBCASTpacket(true, "BCastStr");
+    short opcode=res1->getOpCode();
+    short deleted_or_added=res1->getAddedOrDeleted();
+    string Filename=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode << " the deleted_or_added is " << deleted_or_added <<"  and the Filename is " << Filename<<endl;
 }
 
-void EncdecTest::testBCastEncode (EncoderDecoder& encdec){
-    BCastPacket *packet = new BCastPacket(((short)9), (char) 1, "BCastStr");
+void EncdecTest::testBCastEncode (MessageEncDec& encdec){
+    Packet *packet = new Packet();
+    packet->createBCASTpacket((char) 1, "BCastStr");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " is the Opcode " << packet->getDelOrAdd() << " is the deleted_or_added code " << packet->getFileName()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " is the Opcode " << packet->getAddedOrDeleted() << " is the deleted_or_added code " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,9,1,66,67,97,115,116,83,116,114,0}
     cout<<"The output should be {0,9,1,66,67,97,115,116,83,116,114,0}"<<endl;
 }
 
-void EncdecTest::testDELRQDecode (EncoderDecoder& encdec){
+void EncdecTest::testDELRQDecode (MessageEncDec& encdec){
     vector<char> b = {0,8,68,97,110,97,0};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    DELRQPacket *res1= dynamic_cast<DELRQPacket*>(res);
-    short opcode=res1->getOpcode();
-    string fileName=res1->getFileName();
+    Packet *res1= new Packet();
+    res1->createDELRQpacket("Dana");
+    short opcode=res1->getOpCode();
+    string fileName=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode <<" and the fileName is " << fileName<<endl;
 }
 
-void EncdecTest::testDELRQEncode (EncoderDecoder& encdec){
-    DELRQPacket *packet = new DELRQPacket((short) 8, "Dana");
+void EncdecTest::testDELRQEncode (MessageEncDec& encdec){
+    Packet *packet = new Packet();
+    packet->createDELRQpacket("Dana");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " Opcode " << packet->getFileName()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " Opcode " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,8,68,97,110,97,0}
@@ -200,24 +206,26 @@ void EncdecTest::testDELRQEncode (EncoderDecoder& encdec){
 }
 
 
-void EncdecTest::testLOGRQDecode (EncoderDecoder& encdec){
+void EncdecTest::testLOGRQDecode (MessageEncDec& encdec){
     vector<char> b = {0,7,68,97,110,97,0};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    LOGRQPacket *res1= dynamic_cast<LOGRQPacket*>(res);
-    short opcode=res1->getOpcode();
-    string userName=res1->getUserName();
+    Packet *res1= new Packet();
+    res1->createLOGRQpacket("Dana");
+    short opcode=res1->getOpCode();
+    string userName=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode <<" and the userName is " << userName<<endl;
 }
 
-void EncdecTest::testLOGRQEncode (EncoderDecoder& encdec){
-    LOGRQPacket *packet = new LOGRQPacket((short) 7, "Dana");
+void EncdecTest::testLOGRQEncode (MessageEncDec& encdec){
+    Packet *packet = new Packet();
+    packet->createLOGRQpacket("Dana");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " Opcode " << packet->getUserName()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " Opcode " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,7,68,97,110,97,0}
@@ -225,23 +233,25 @@ void EncdecTest::testLOGRQEncode (EncoderDecoder& encdec){
 }
 
 
-void EncdecTest::testDIRQDecode (EncoderDecoder& encdec){
+void EncdecTest::testDIRQDecode (MessageEncDec& encdec){
     vector<char> b = {0,6};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    DIRQPacket *res1= dynamic_cast<DIRQPacket*>(res);
-    short opcode=res1->getOpcode();
+    Packet *res1= new Packet();
+    res1->createDIRQpacket();
+    short opcode=res1->getOpCode();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode<<endl;
 }
 
-void EncdecTest::testDIRQEncode (EncoderDecoder& encdec){
-    DIRQPacket *packet = new DIRQPacket((short)6);
+void EncdecTest::testDIRQEncode (MessageEncDec& encdec){
+    Packet*packet = new Packet();
+    packet->createDIRQpacket();
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " is the Opcode"<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " is the Opcode"<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,6}
@@ -249,99 +259,107 @@ void EncdecTest::testDIRQEncode (EncoderDecoder& encdec){
 }
 
 
-void EncdecTest::testErrorDecode (EncoderDecoder& encdec){
+void EncdecTest::testErrorDecode (MessageEncDec& encdec){
     vector<char> b = {0,5,14,20 ,69,114,114,111,114,32,75,97,112,97,114,97 ,0};
     // bytesToShort({14,20})=(short)3604, and popString({69,114,114,111,114,32,75,97,112,97,114,97})=(String)"Error Kapara"
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    ErrorPacket *res1= dynamic_cast<ErrorPacket*>(res);
-    short opcode=res1->getOpcode();
-    short errorCode=res1->getErrorCode();
-    string errorMsg=res1->getErrMsg();
+    Packet *res1= new Packet();
+    res1->createERRORpacket((short)3604, "Error Kapara");
+    short opcode=res1->getOpCode();
+    short errorCode=res1->getErrCode();
+    string errorMsg=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode << " The Error code is " << errorCode <<"  and the error messege is " << errorMsg<<endl;
 }
 
-void EncdecTest::testErrorEncode (EncoderDecoder& encdec){
+void EncdecTest::testErrorEncode (MessageEncDec& encdec){
     cout << "I'm at the Error encode" << endl;
-    ErrorPacket *packet = new ErrorPacket((short)5, (short)3604, "Error Kapara");
+    Packet *packet = new Packet();
+    packet->createERRORpacket((short)3604, "Error Kapara");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " is the Opcode " << packet->getErrorCode() <<" is the error code " << packet->getErrMsg()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " is the Opcode " << packet->getErrCode() <<" is the error code " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,5,14,20 ,69,114 ,114,111,114,32,75,97,112,97,114,97 ,0}
     cout<<"The output should be {0,5,14,20,69,114,114,111,114,32,75,97,112,97,114,97,0}"<<endl;
 }
 
-void EncdecTest::testRRQDecode (EncoderDecoder& encdec){
+void EncdecTest::testRRQDecode (MessageEncDec& encdec){
     vector<char> b = {0,1,68,97,110,97,0};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
-        res=encdec.decodeNextByte(b[i]);
-    RRQPacket *res1= dynamic_cast<RRQPacket*>(res);
-    short opcode=res1->getOpcode();
-    string fileName=res1->getFileName();
+        res=encdec.decodeNextByte(b.at(i));
+    Packet *res1= new Packet();
+    res1->createRRQpacket("Dana");
+    short opcode=res1->getOpCode();
+    string fileName=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode <<" and the fileName is " << fileName<<endl;
 }
 
-void EncdecTest::testRRQEncode (EncoderDecoder& encdec){
-    RRQPacket *packet = new RRQPacket((short) 1, "Dana");
+void EncdecTest::testRRQEncode (MessageEncDec& encdec){
+    Packet*packet = new Packet();
+    packet->createRRQpacket("Dana");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " Opcode " << packet->getFileName()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " Opcode " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,1,68,97,110,97,0}
     cout<<"The output should be {0,1,68,97,110,97,0}"<<endl;
 }
 
-void EncdecTest::testWRQDecode (EncoderDecoder& encdec){
+void EncdecTest::testWRQDecode (MessageEncDec& encdec){
     vector<char> b = {0,2,68,97,110,97,0};
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
     for (int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
-    WRQPacket *res1= dynamic_cast<WRQPacket*>(res);
-    short opcode=res1->getOpcode();
-    string fileName=res1->getFileName();
+    Packet*res1= new Packet();
+    res1->createWRQpacket("Dana");
+    short opcode=res1->getOpCode();
+    string fileName=res1->getString();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode <<" and the fileName is " << fileName<<endl;
 }
 
-void EncdecTest::testWRQEncode (EncoderDecoder& encdec){
-    WRQPacket *packet = new WRQPacket((short) 2, "Dana");
+void EncdecTest::testWRQEncode (MessageEncDec& encdec){
+    Packet*packet = new Packet();
+    packet->createWRQpacket("Dana");
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " Opcode " << packet->getFileName()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " Opcode " << packet->getString()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,2,68,97,110,97,0}
     cout<<"The output should be {0,2,68,97,110,97,0}"<<endl;
 }
 
-void EncdecTest::testACKDecode (EncoderDecoder& encdec){
+void EncdecTest::testACKDecode (MessageEncDec& encdec){
     vector<char> b = {0,4,14,20}; // bytesToShort({14,20})=(short)3604
-    ServerPacket* res=nullptr;
+    Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (int i=0; i<b.capacity(); i++)
         res=encdec.decodeNextByte(b[i]);
-    AckPacket *res1= dynamic_cast<AckPacket*>(res);
-    short opcode=res1->getOpcode();
-    short blockNum=res1->getBlockNum();
+    Packet *res1= new Packet();
+    res1->createACKpacket(((short)3604));
+    short opcode=res1->getOpCode();
+    short blockNum=res1->getBlockNumber();
     cout<<"After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode <<" and the blockNum is " << blockNum<<endl;
 }
 
-void EncdecTest::testACKEncode (EncoderDecoder& encdec){
-    AckPacket *packet = new AckPacket((short) 4, ((short)3604)); // bytesToShort({14,20})=(short)3604
+void EncdecTest::testACKEncode (MessageEncDec& encdec){
+    Packet *packet = new Packet();
+    packet->createACKpacket((short)3604); // bytesToShort({14,20})=(short)3604
     vector<char>* res = encdec.encode(packet);
-    cout<<"Encoding the packet " << packet->getOpcode() << " Opcode " << packet->getBlockNum()<<endl;
+    cout<<"Encoding the packet " << packet->getOpCode() << " Opcode " << packet->getBlockNumber()<<endl;
     cout<<"Output: "<<endl;
 
     printArr(*res); // Should be {0,2,68,97,110,97,0}

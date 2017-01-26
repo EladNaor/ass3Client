@@ -1,70 +1,6 @@
-//#include "../include/MessageEncDec.h"
-
-#include <string>
-#include <vector>
-#include "../include/Packet.h"
+#include "../include/MessageEncDec.h"
 
 using namespace std;
-class MessageEncDec {
-
-private:
-    Packet *p = nullptr;
-    short opCode = 0;
-    vector<char>* charOfOpCode;
-    int i = 0;
-    vector<char>* charBuffer;
-
-    //For DATA Packets:
-    int j = 0;
-    int counter = 0;
-    short packetSize = 0;
-    short blockNumber = 0;
-    vector<char> *charsOfDataPacketSize;
-    vector<char> *charsOfBlockNumber;
-    vector<char> *data = new vector<char>();
-
-    //for ERROR Packets
-    int k = 0;
-    short errCode = 0;
-    vector<char> *charsOfErrorCode;
-
-    //For Encoder
-    vector<char> ans;
-
-    //For BCAST Packet
-    bool delOrAdd = false;
-
-
-public:
-    virtual ~MessageEncDec() {
-        delete p;
-        delete charBuffer;
-        delete data;
-    }
-
-
-    virtual void errorInit();
-
-    virtual void init();
-
-    virtual void dataInit();
-
-    virtual Packet *decodeNextByte(char nextByte);
-
-    virtual std::vector<char> encode(Packet *message);
-
-    short bytesToShort(char *bytesArr);
-
-    void shortToBytes(short num, char *bytesArr);
-
-private:
-    string charBufferToString(vector<char> *charBuffer);
-
-    char* vecToArr(vector<char>& vector1);
-
-    vector<char> arrToVec(char* c);
-};
-
 void MessageEncDec::init() {
     p = nullptr;
     i = 0;
@@ -87,21 +23,21 @@ void MessageEncDec::dataInit() {
     data = new vector<char>();
 }
 
-char* MessageEncDec::vecToArr(vector<char>& v){
+char *MessageEncDec::vecToArr(vector<char> &v) {
     // Get a char pointer to the data in the vector
-    char* buf = &v[0];
+    char *buf = &v[0];
     return buf;
 }
 
-vector<char> MessageEncDec::arrToVec(char* c){
-    int size=sizeof(c);
-    vector<char> v (c, c+size);
+vector<char> MessageEncDec::arrToVec(char *c) {
+    int size = sizeof(c);
+    vector<char> v(c, c + size);
     return v;
 }
 
-Packet* MessageEncDec::decodeNextByte(char nextByte) {
+Packet *MessageEncDec::decodeNextByte(char nextByte) {
     if (opCode == 0) {
-        charOfOpCode->assign(i,nextByte);
+        charOfOpCode->assign(i, nextByte);
         i++;
         if (i == 2) {
             opCode = bytesToShort(vecToArr(*charOfOpCode));
@@ -114,12 +50,12 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
         case 3: {
             if (j < 4) {
                 if (j == 0 || j == 1) {
-                    charsOfDataPacketSize->assign(j,nextByte);
+                    charsOfDataPacketSize->assign(j, nextByte);
                     j++;
                     return nullptr;
                 }
                 if (j == 2 || j == 3) {
-                    charsOfBlockNumber->assign(j-2,nextByte);
+                    charsOfBlockNumber->assign(j - 2, nextByte);
                     if (j == 3) {
                         packetSize = bytesToShort(vecToArr(*charsOfDataPacketSize));
                         blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
@@ -129,7 +65,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
                 }
             } else {
                 if (counter <= packetSize) {
-                    data->assign(counter,nextByte);
+                    data->assign(counter, nextByte);
                     counter++;
 
                     if (counter == packetSize) {
@@ -146,7 +82,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
 
         case 4: {
             if (k == 0 || k == 1) {
-                charsOfBlockNumber->assign(k,nextByte);
+                charsOfBlockNumber->assign(k, nextByte);
                 k++;
                 if (k == 2) {
                     blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
@@ -162,7 +98,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
 
         case 5: {
             if (k < 2) {
-                charsOfErrorCode->assign(k,nextByte) ;
+                charsOfErrorCode->assign(k, nextByte);
                 k++;
                 return nullptr;
             }
@@ -171,7 +107,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
                 k++;
             }
             if (nextByte != 0) {
-                charBuffer->assign(counter,nextByte);
+                charBuffer->assign(counter, nextByte);
                 counter++;
                 return nullptr;
             } else {
@@ -191,7 +127,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
                 return nullptr;
             }
             if (nextByte != 0) {
-                charBuffer->assign(j-1,nextByte);
+                charBuffer->assign(j - 1, nextByte);
                 j++;
                 return nullptr;
             } else {
@@ -295,13 +231,13 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
 //}
 
 
-short MessageEncDec::bytesToShort(char* bytesArr) {
-    short result = (short)((bytesArr[0] & 0xff) << 8);
-    result += (short)(bytesArr[1] & 0xff);
+short MessageEncDec::bytesToShort(char *bytesArr) {
+    short result = (short) ((bytesArr[0] & 0xff) << 8);
+    result += (short) (bytesArr[1] & 0xff);
     return result;
 }
 
-void MessageEncDec::shortToBytes(short num, char* bytesArr) {
+void MessageEncDec::shortToBytes(short num, char *bytesArr) {
     bytesArr[0] = ((num >> 8) & 0xFF);
     bytesArr[1] = (num & 0xFF);
 }
@@ -315,4 +251,14 @@ string MessageEncDec::charBufferToString(vector<char> *charBuffer) {
     return ans;
 }
 
+std::vector<char>*  MessageEncDec::encode(Packet *message) {
+    return new vector<char>();
+}
+
+
+MessageEncDec::~MessageEncDec() {
+    delete p;
+    delete charBuffer;
+    delete data;
+}
 

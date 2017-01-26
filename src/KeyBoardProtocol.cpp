@@ -89,7 +89,9 @@ void KeyBoardProtocol::run() {
         }
 
         int len = line.length();
-        if (!connectionHandler->sendBytes(encDec->encode(p))) {
+        vector<char>* encoded = encDec->encode(p);
+
+        if (!connectionHandler->sendBytes( &encoded->at(0) , encoded->size())) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
             break;
         }
