@@ -1,4 +1,9 @@
-#include "../include/MessageEncDec.h"
+//#include "../include/MessageEncDec.h"
+
+#include <string>
+#include <vector>
+#include "../include/Packet.h"
+
 using namespace std;
 class MessageEncDec {
 
@@ -44,10 +49,6 @@ public:
 
     virtual void dataInit();
 
-    char* vecToArr(vector<char>& v);
-
-    vector<char> arrToVec(char* c);
-
     virtual Packet *decodeNextByte(char nextByte);
 
     virtual std::vector<char> encode(Packet *message);
@@ -57,9 +58,11 @@ public:
     void shortToBytes(short num, char *bytesArr);
 
 private:
-      std::wstring charBufferToString(vector<char> *charBuffer);
+    string charBufferToString(vector<char> *charBuffer);
 
+    char* vecToArr(vector<char>& vector1);
 
+    vector<char> arrToVec(char* c);
 };
 
 void MessageEncDec::init() {
@@ -168,10 +171,11 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
                 k++;
             }
             if (nextByte != 0) {
-                charBuffer.(nextByte);
+                charBuffer->assign(counter,nextByte);
+                counter++;
                 return nullptr;
             } else {
-                std::wstring errMsg = byteBufferToChar(byteBuffer);
+                string errMsg = charBufferToString(charBuffer);
                 p = new Packet();
                 p->createERRORpacket(errCode, errMsg);
                 opCode = 0;
@@ -180,45 +184,31 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
             }
         }
 
-//        case 9: {
-//            if (j == 0 && nextByte == 1) {
-//                delOrAdd = true;
-//                j++;
-//                return nullptr;
-//            }
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring fileName = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createBCASTpacket(delOrAdd, fileName);
-//                opCode = 0;
-//                j = 0;
-//                return p;
-//            }
-//        }
-//    }
-//    return nullptr;
+        case 9: {
+            if (j == 0 && nextByte == 1) {
+                delOrAdd = true;
+                j++;
+                return nullptr;
+            }
+            if (nextByte != 0) {
+                charBuffer->assign(j-1,nextByte);
+                j++;
+                return nullptr;
+            } else {
+                string fileName = charBufferToString(charBuffer);
+                p = new Packet();
+                p->createBCASTpacket(delOrAdd, fileName);
+                opCode = 0;
+                j = 0;
+                return p;
+            }
+        }
+    }
+    return nullptr;
 }
-//
-//std::wstring MessageEncDec::byteBufferToChar(ByteBuffer *byteBuffer) {
-//    byteBuffer->flip();
-//    std::vector<char> username(byteBuffer->limit());
-//    for (int i = 0; i < username.size(); i++) {
-//        username[i] = byteBuffer->get(i);
-//    }
-//    std::wstring ans = L"";
-////    try {
-//        ans = std::wstring(username, L"UTF-8");
-////    }
-////    catch (const UnsupportedEncodingException &e) {
-////        e->printStackTrace();
-////    }
-//    return ans;
-//}
 
-std::vector<char> MessageEncDec::encode(Packet *message) {
+
+//std::vector<char> MessageEncDec::encode(Packet *message) {
 //    std::vector<char> opCodeBytes = shortToBytes(message->getOpCode());
 //    switch (message->getOpCode()) {
 //        case 1:
@@ -305,8 +295,7 @@ std::vector<char> MessageEncDec::encode(Packet *message) {
 }
 
 
-short MessageEncDec::bytesToShort(char* bytesArr)
-{
+short MessageEncDec::bytesToShort(char* bytesArr) {
     short result = (short)((bytesArr[0] & 0xff) << 8);
     result += (short)(bytesArr[1] & 0xff);
     return result;
@@ -315,6 +304,15 @@ short MessageEncDec::bytesToShort(char* bytesArr)
 void MessageEncDec::shortToBytes(short num, char* bytesArr) {
     bytesArr[0] = ((num >> 8) & 0xFF);
     bytesArr[1] = (num & 0xFF);
+}
+
+string MessageEncDec::charBufferToString(vector<char> *charBuffer) {
+    charBuffer->shrink_to_fit();
+    string ans = "";
+    for (int i = 0; i < charBuffer->size(); i++) {
+        ans = ans + charBuffer->at(i);
+    }
+    return ans;
 }
 
 

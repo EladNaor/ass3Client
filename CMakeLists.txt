@@ -28,7 +28,8 @@ endif()
 add_executable(ass3Client
         src/MainClient.cpp src/KeyBoardProtocol.cpp include/KeyBoardProtocol.h
         src/SocketProtocol.cpp include/SocketProtocol.h
-        src/ConnectionHandler.cpp include/ConnectionHandler.h)
+        src/ConnectionHandler.cpp include/ConnectionHandler.h
+        src/packet.cpp include/packet.h)
 
 if(Boost_FOUND)
     target_link_libraries(ass3Client ${Boost_LIBRARIES} ws2_32)
