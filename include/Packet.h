@@ -10,7 +10,7 @@ class Packet {
 private:
     short opcode = 0;
     short blockNumber = 0;
-    std::wstring string;
+    std::string string;
     // true if the packet has 1 byte of 0 there
     bool endByte = false;
     //only for BCAST packet
@@ -48,23 +48,25 @@ private:
 
 
 public:
-    virtual void createRRQpacket(const std::wstring &filename);
 
-    virtual void createWRQpacket(const std::wstring &filename);
+    Packet();
+    virtual void createRRQpacket(std::string filename);
+
+    virtual void createWRQpacket(std::string filename);
 
     virtual void createDATApacket(short packetSize, short blockNumber, std::vector<char> &data);
 
     virtual void createACKpacket(short numOfBlocks);
 
-    virtual void createERRORpacket(short errCode, const std::wstring &errMsg);
+    virtual void createERRORpacket(short errCode, std::string errMsg);
 
     virtual void createDIRQpacket();
 
-    virtual void createLOGRQpacket(const std::wstring &username);
+    virtual void createLOGRQpacket(std::string username);
 
-    virtual void createDELRQpacket(const std::wstring &filename);
+    virtual void createDELRQpacket(std::string filename);
 
-    virtual void createBCASTpacket(bool isAdded, const std::wstring &filename);
+    virtual void createBCASTpacket(bool isAdded, std::string filename);
 
     virtual void createDISCpacket();
 
@@ -73,7 +75,7 @@ public:
 
     virtual short getOpCode();
 
-    virtual std::wstring getString();
+    virtual std::string getString();
 
     virtual short getBlockNumber();
 

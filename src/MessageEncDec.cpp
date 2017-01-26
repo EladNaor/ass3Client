@@ -1,176 +1,185 @@
 #include "../include/MessageEncDec.h"
+using namespace std;
+class MessageEncDec {
+
+private:
+    Packet *p = nullptr;
+    short opCode = 0;
+    vector<char>* charOfOpCode;
+    int i = 0;
+    vector<char>* charBuffer;
+
+    //For DATA Packets:
+    int j = 0;
+    int counter = 0;
+    short packetSize = 0;
+    short blockNumber = 0;
+    vector<char> *charsOfDataPacketSize;
+    vector<char> *charsOfBlockNumber;
+    vector<char> *data = new vector<char>();
+
+    //for ERROR Packets
+    int k = 0;
+    short errCode = 0;
+    vector<char> *charsOfErrorCode;
+
+    //For Encoder
+    vector<char> ans;
+
+    //For BCAST Packet
+    bool delOrAdd = false;
+
+
+public:
+    virtual ~MessageEncDec() {
+        delete p;
+        delete charBuffer;
+        delete data;
+    }
+
+
+    virtual void errorInit();
+
+    virtual void init();
+
+    virtual void dataInit();
+
+    char* vecToArr(vector<char>& v);
+
+    vector<char> arrToVec(char* c);
+
+    virtual Packet *decodeNextByte(char nextByte);
+
+    virtual std::vector<char> encode(Packet *message);
+
+    short bytesToShort(char *bytesArr);
+
+    void shortToBytes(short num, char *bytesArr);
+
+private:
+      std::wstring charBufferToString(vector<char> *charBuffer);
+
+
+};
+
+void MessageEncDec::init() {
+    p = nullptr;
+    i = 0;
+    delOrAdd = false;
+    charOfOpCode = new vector<char>;
+    charBuffer = new vector<char>;
+}
 
 void MessageEncDec::errorInit() {
     k = 0;
-   // bytesOfErrorCode = std::vector<char>(2);
-}
-
-void MessageEncDec::init() {
-//    p = nullptr;
-//    delOrAdd = false;
-//    bytesOfOpCode = std::vector<char>(2);
-//    i = 0;
-//    byteBuffer = ByteBuffer::allocate(512);
+    counter = 0;
+    charsOfErrorCode = new vector<char>(2);
 }
 
 void MessageEncDec::dataInit() {
     j = 0;
     counter = 0;
-//    bytesOfDataPacketSize = std::vector<char>(2);
-//    bytesOfBlockNumber = std::vector<char>(2);
-//    data = ByteBuffer::allocate(512);
+    charsOfDataPacketSize = new vector<char>(2);
+    charsOfBlockNumber = new vector<char>(2);
+    data = new vector<char>();
 }
 
-Packet *MessageEncDec::decodeNextByte(char nextByte) {
-//    if (opCode == 0) {
-//        bytesOfOpCode[i] = nextByte;
-//        i++;
-//        if (i == 2) {
-//            opCode = bytesToShort(bytesOfOpCode);
-//            init();
-//
-//            if (opCode == 6) {
-//                Packet *p2 = new Packet();
-//                p2->createDIRQpacket();
-//                opCode = 0;
-//                return p2;
-//            }
-//
-//            if (opCode == 10) {
-//                Packet *p2 = new Packet();
-//                p2->createDISCpacket();
-//                opCode = 0;
-//                return p2;
-//            }
-//        }
-//        return nullptr;
-//    }
-//
-//    switch (opCode) {
-//        case 1: {
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring fileName = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createRRQpacket(fileName);
-//                opCode = 0;
-//                return p;
-//            }
-//        }
-//
-//        case 2: {
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring fileName = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createWRQpacket(fileName);
-//                opCode = 0;
-//                return p;
-//            }
-//        }
-//
-//        case 3: {
-//            if (j < 4) {
-//                if (j == 0 || j == 1) {
-//                    bytesOfDataPacketSize[j] = nextByte;
-//                    j++;
-//                    return nullptr;
-//                }
-//                if (j == 2 || j == 3) {
-//                    bytesOfBlockNumber[j - 2] = nextByte;
-//                    if (j == 3) {
-//                        packetSize = bytesToShort(bytesOfDataPacketSize);
-//                        blockNumber = bytesToShort(bytesOfBlockNumber);
-//                    }
-//                    j++;
-//                    return nullptr;
-//                }
-//            } else {
-//                if (counter <= packetSize) {
-//                    data->put(nextByte);
-//                    counter++;
-//
-//                    if (counter == packetSize) {
-//                        p = new Packet();
-//                        p->createDATApacket(packetSize, blockNumber, byteBufferToChar(data).getBytes());
-//                        dataInit();
-//                        opCode = 0;
-//                        return p;
-//                    }
-//                    return nullptr;
-//                }
-//            }
-//        }
-//
-//        case 4: {
-//            if (k == 0 || k == 1) {
-//                bytesOfBlockNumber[k] = nextByte;
-//                k++;
-//                if (k == 2) {
-//                    blockNumber = bytesToShort(bytesOfBlockNumber);
-//                    p = new Packet();
-//                    p->createACKpacket(blockNumber);
-//                    opCode = 0;
-//                    errorInit();
-//                    return p;
-//                }
-//                return nullptr;
-//            }
-//        }
-//
-//        case 5: {
-//            if (k < 2) {
-//                bytesOfErrorCode[k] = nextByte;
-//                k++;
-//                return nullptr;
-//            }
-//            if (k == 2) {
-//                errCode = bytesToShort(bytesOfErrorCode);
-//                k++;
-//            }
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring errMsg = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createERRORpacket(errCode, errMsg);
-//                opCode = 0;
-//                errorInit();
-//                return p;
-//            }
-//        }
-//
-//        case 7: {
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring userName = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createLOGRQpacket(userName);
-//                opCode = 0;
-//                return p;
-//            }
-//        }
-//
-//        case 8: {
-//            if (nextByte != 0) {
-//                byteBuffer->put(nextByte);
-//                return nullptr;
-//            } else {
-//                std::wstring fileName = byteBufferToChar(byteBuffer);
-//                p = new Packet();
-//                p->createDELRQpacket(fileName);
-//                opCode = 0;
-//                return p;
-//            }
-//        }
-//
+char* MessageEncDec::vecToArr(vector<char>& v){
+    // Get a char pointer to the data in the vector
+    char* buf = &v[0];
+    return buf;
+}
+
+vector<char> MessageEncDec::arrToVec(char* c){
+    int size=sizeof(c);
+    vector<char> v (c, c+size);
+    return v;
+}
+
+Packet* MessageEncDec::decodeNextByte(char nextByte) {
+    if (opCode == 0) {
+        charOfOpCode->assign(i,nextByte);
+        i++;
+        if (i == 2) {
+            opCode = bytesToShort(vecToArr(*charOfOpCode));
+            init();
+        }
+        return nullptr;
+    }
+
+    switch (opCode) {
+        case 3: {
+            if (j < 4) {
+                if (j == 0 || j == 1) {
+                    charsOfDataPacketSize->assign(j,nextByte);
+                    j++;
+                    return nullptr;
+                }
+                if (j == 2 || j == 3) {
+                    charsOfBlockNumber->assign(j-2,nextByte);
+                    if (j == 3) {
+                        packetSize = bytesToShort(vecToArr(*charsOfDataPacketSize));
+                        blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
+                    }
+                    j++;
+                    return nullptr;
+                }
+            } else {
+                if (counter <= packetSize) {
+                    data->assign(counter,nextByte);
+                    counter++;
+
+                    if (counter == packetSize) {
+                        p = new Packet();
+                        p->createDATApacket(packetSize, blockNumber, *data);
+                        dataInit();
+                        opCode = 0;
+                        return p;
+                    }
+                    return nullptr;
+                }
+            }
+        }
+
+        case 4: {
+            if (k == 0 || k == 1) {
+                charsOfBlockNumber->assign(k,nextByte);
+                k++;
+                if (k == 2) {
+                    blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
+                    p = new Packet();
+                    p->createACKpacket(blockNumber);
+                    opCode = 0;
+                    errorInit();
+                    return p;
+                }
+                return nullptr;
+            }
+        }
+
+        case 5: {
+            if (k < 2) {
+                charsOfErrorCode->assign(k,nextByte) ;
+                k++;
+                return nullptr;
+            }
+            if (k == 2) {
+                errCode = bytesToShort(vecToArr(*charsOfErrorCode));
+                k++;
+            }
+            if (nextByte != 0) {
+                charBuffer.(nextByte);
+                return nullptr;
+            } else {
+                std::wstring errMsg = byteBufferToChar(byteBuffer);
+                p = new Packet();
+                p->createERRORpacket(errCode, errMsg);
+                opCode = 0;
+                errorInit();
+                return p;
+            }
+        }
+
 //        case 9: {
 //            if (j == 0 && nextByte == 1) {
 //                delOrAdd = true;
@@ -303,8 +312,9 @@ short MessageEncDec::bytesToShort(char* bytesArr)
     return result;
 }
 
-void MessageEncDec::shortToBytes(short num, char* bytesArr)
-{
+void MessageEncDec::shortToBytes(short num, char* bytesArr) {
     bytesArr[0] = ((num >> 8) & 0xFF);
     bytesArr[1] = (num & 0xFF);
 }
+
+
