@@ -292,7 +292,7 @@ Packet* MessageEncDec::decodeNextByte(char nextByte) {
 //        }
 //    }
 //    return ans;
-}
+//}
 
 
 short MessageEncDec::bytesToShort(char* bytesArr) {
