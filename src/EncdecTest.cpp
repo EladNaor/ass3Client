@@ -336,7 +336,7 @@ void EncdecTest::testACKEncode (MessageEncDec& encdec){
 void EncdecTest::printArr(vector<char> b){
     string s="";
     for (unsigned int i=0; i<b.size(); i++){
-        s = s + b[i] + " ";
+        s = s + b.at(i) + " ";
     }
     cout << s <<endl;
 }

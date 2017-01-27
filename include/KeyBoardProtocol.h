@@ -15,7 +15,6 @@ class KeyBoardProtocol {
 public:
     ConnectionHandler* connectionHandler;
     KeyBoardProtocol(ConnectionHandler *pHandler);
-    MessageEncDec* encDec = new MessageEncDec();
 
     void operator()();
 

@@ -1,7 +1,6 @@
 #include <boost/thread.hpp>
 #include "../include/KeyBoardProtocol.h"
 #include "../include/SocketProtocol.h"
-#include "../include/ConnectionHandler.h"
 
 int main(int argc, char *argv[]){
     if (argc < 3) {

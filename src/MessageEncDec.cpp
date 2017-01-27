@@ -147,39 +147,39 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 
 
 vector<char>* MessageEncDec::encode(Packet *message) {
-    vector<char> *opCodeBytes = new vector<char>(2);
-    shortToBytes((short) message->getOpCode(), opCodeBytes);
+    vector<char> *opCodeBytes = new vector<char>[2];
+    shortToBytes(message->getOpCode(), opCodeBytes);
     switch (message->getOpCode()) {
-//        case 1: case 2: case 7: case 8:{
-////            ans = std::vector<char>(message->getString().getBytes()->length + 3);
-//            ans[0] = opCodeBytes[0];
-//            ans[1] = opCodeBytes[1];
-//            ans[ans.size() - 1] = 0;
-////            std::vector<char> string = message->getString().getBytes();
-//            for (int i = 2; i < string.size() + 2; i++) {
-//                ans[i] = string[i - 2];
-//            }
-//            break;
-//        }
-
-        case 3: {
-            ans = std::vector<char>(message->getPacketSize() + 6);
-            ans.assign(0,opCodeBytes->at(0));
-            ans.assign(1,opCodeBytes->at(1));
-            vector<char>* temp;
-            shortToBytes(message->getPacketSize(),temp);
-            ans.assign(2,temp->at(0));
-            ans.assign(3,temp->at(1));
-            shortToBytes(message->getBlockNumber(),temp);
-            ans.assign(4,temp->at(0));
-            ans.assign(5,temp->at(1));
-            temp = message->getData();
-            for (unsigned int i = 6; i < temp->capacity() + 6; i++) {
-                ans.assign(i,temp->at(i - 6));
+        case 1: case 2: case 7: case 8:{
+            ans = new vector<char>(message->getString().size() + 3);
+            ans->at(0)=opCodeBytes->at(0);
+            ans->at(1)=opCodeBytes->at(1);
+            ans->at(ans->size()-1)=0;
+            string msgString = message->getString();
+            for (int i = 2; i < msgString.size() + 2; i++) {
+                ans->at(i) = msgString.at(i-2);
             }
             break;
         }
-//
+
+        case 3: {
+            ans = new vector<char>(message->getPacketSize() + 6);
+            ans->at(0)= opCodeBytes->at(0);
+            ans->at(1)= opCodeBytes->at(1);
+            vector<char>* temp = new vector<char>();
+            shortToBytes(message->getPacketSize(),temp);
+            ans->at(2)=temp->at(0);
+            ans->at(3)=temp->at(1);
+            shortToBytes(message->getBlockNumber(),temp);
+            ans->at(4)=temp->at(0);
+            ans->at(5)=temp->at(1);
+            temp = message->getData();
+            for (unsigned int i = 6; i < temp->size() + 6; i++) {
+                ans->at(i)=temp->at(i - 6);
+            }
+            break;
+        }
+
 //        case 4: {
 //            ans = std::vector<char>(4);
 //            ans[0] = opCodeBytes[0];
@@ -227,9 +227,8 @@ vector<char>* MessageEncDec::encode(Packet *message) {
 //            }
 //            break;
 //        }
-//    }
-//    return ans;
     }
+    return ans;
 }
 
 
@@ -239,8 +238,8 @@ short MessageEncDec::bytesToShort(char *bytesArr) {
     return result;
 }
 void MessageEncDec::shortToBytes(short num, vector<char> *bytesArr) {
-    bytesArr->at(0) = ((num >> 8) & 0xFF);
-    bytesArr->at(1) = (num & 0xFF);
+    bytesArr->insert(bytesArr->begin(),((num >> 8) & 0xFF));
+    bytesArr->insert(bytesArr->begin()+1 ,(num & 0xFF));
 }
 
 string MessageEncDec::charBufferToString(vector<char> *charBuffer) {

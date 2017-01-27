@@ -50,42 +50,42 @@ private:
 public:
 
     Packet();
-    virtual void createRRQpacket(std::string filename);
+    void createRRQpacket(std::string filename);
 
-    virtual void createWRQpacket(std::string filename);
+    void createWRQpacket(std::string filename);
 
-    virtual void createDATApacket(short packetSize, short blockNumber, std::vector<char> &data);
+    void createDATApacket(short packetSize, short blockNumber, std::vector<char> &data);
 
-    virtual void createACKpacket(short numOfBlocks);
+    void createACKpacket(short numOfBlocks);
 
-    virtual void createERRORpacket(short errCode, std::string errMsg);
+    void createERRORpacket(short errCode, std::string errMsg);
 
-    virtual void createDIRQpacket();
+    void createDIRQpacket();
 
-    virtual void createLOGRQpacket(std::string username);
+    void createLOGRQpacket(std::string username);
 
-    virtual void createDELRQpacket(std::string filename);
+    void createDELRQpacket(std::string filename);
 
-    virtual void createBCASTpacket(bool isAdded, std::string filename);
+    void createBCASTpacket(bool isAdded, std::string filename);
 
-    virtual void createDISCpacket();
+    void createDISCpacket();
 
 
-    virtual void send();
+    void send();
 
-    virtual short getOpCode();
+    short getOpCode();
 
-    virtual std::string getString();
+    std::string getString();
 
-    virtual short getBlockNumber();
+    short getBlockNumber();
 
-    virtual short getPacketSize();
+    short getPacketSize();
 
-    virtual std::vector<char> * getData();
+    std::vector<char> * getData();
 
-    virtual short getErrCode();
+    short getErrCode();
 
-    virtual bool getAddedOrDeleted();
+    bool getAddedOrDeleted();
 
 
 };

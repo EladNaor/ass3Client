@@ -4,7 +4,7 @@ project(ass3Client)
 message(STATUS "start running cmake...")
 #-Wall -Weffc++
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Weffc++ -std=c++11 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g  -std=c++11 ")
 
 set(Boost_INCLUDE_DIR "C:/Program Files/boost/include/boost-1_63/")
 set(Boost_LIBRARY_DIR "C:/Program Files/boost/lib/")

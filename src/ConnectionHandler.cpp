@@ -9,7 +9,7 @@ using std::endl;
 using std::string;
  
 ConnectionHandler::ConnectionHandler(string host, short port): host_(host), port_(port), io_service_(), socket_(io_service_)
-,encDec(new MessageEncDec()){}
+,encDec(MessageEncDec()){}
     
 ConnectionHandler::~ConnectionHandler() {
     close();
@@ -72,7 +72,7 @@ bool ConnectionHandler::getPacketFromSocket(Packet* packet) {
     try {
         while (packet == nullptr){
             getBytes(&ch, 1);
-            packet= encDec->decodeNextByte(ch);
+            packet= encDec.decodeNextByte(ch);
         }
 
     } catch (std::exception& e) {
@@ -92,6 +92,6 @@ void ConnectionHandler::close() {
 }
 
 bool ConnectionHandler::sendPacketToSocket(Packet *pPacket) {
-    vector<char> *encoded = encDec->encode(pPacket);
+    vector<char> *encoded = encDec.encode(pPacket);
     return sendBytes(&encoded->at(0), encoded->size());
 }
