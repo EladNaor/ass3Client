@@ -26,15 +26,21 @@ int main (int argc, char *argv[]) {
 //  test.testDataDecode(encdec); // 3
   test.testDataEncode(encdec); // 3
 //  test.testACKDecode(encdec); // 4
-// 	test.testACKEncode(encdec); // 4
+    cout << endl ;
+    test.testACKEncode(encdec); // 4
 //  test.testErrorDecode(encdec); // 5
-//	test.testErrorEncode(encdec); // 5
+    cout << endl ;
+	test.testErrorEncode(encdec); // 5
 // 	test.testDIRQDecode(encdec); // 6
 // 	test.testLOGRQDecode(encdec); // 7
 // 	test.testDELRQDecode(encdec); // 8
 // 	test.testBCastDecode(encdec); // 9
 //  test.testBCastEncode(encdec); // 9
 //	test.testDISCDecode(encdec); // 10
+    cout << endl ;
+    test.testLOGRQEncode(encdec);
+    cout << endl ;
+    test.testDIRQEncode(encdec);
 
 }
 
@@ -59,7 +65,7 @@ void EncdecTest::testDataDecode (MessageEncDec& encdec){
     cout<< "Before decoding, the Arr is"<< endl;
     printArr(b);
     cout << "FLAG DataDecode 1" << endl;
-    for (int i=0; i<b.capacity(); i++)
+    for (unsigned int i=0; i<b.capacity(); i++)
         res=encdec.decodeNextByte(b.at(i));
     cout << "FLAG DataDecode 2" << endl;
     Packet *res1= new Packet();
@@ -97,7 +103,7 @@ void EncdecTest::testDISCDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createDISCpacket();
@@ -123,7 +129,7 @@ void EncdecTest::testBCastDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createBCASTpacket(true, "BCastStr");
@@ -150,7 +156,7 @@ void EncdecTest::testDELRQDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createDELRQpacket("Dana");
@@ -177,7 +183,7 @@ void EncdecTest::testLOGRQDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createLOGRQpacket("Dana");
@@ -204,7 +210,7 @@ void EncdecTest::testDIRQDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createDIRQpacket();
@@ -231,7 +237,7 @@ void EncdecTest::testErrorDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createERRORpacket((short)3604, "Error Kapara");
@@ -259,7 +265,7 @@ void EncdecTest::testRRQDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b.at(i));
     Packet *res1= new Packet();
     res1->createRRQpacket("Dana");
@@ -285,7 +291,7 @@ void EncdecTest::testWRQDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.size(); i++)
+    for (unsigned int i=0; i<b.size(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet*res1= new Packet();
     res1->createWRQpacket("Dana");
@@ -311,7 +317,7 @@ void EncdecTest::testACKDecode (MessageEncDec& encdec){
     Packet* res=nullptr;
     cout<<"Before decoding, the Arr is"<<endl;
     printArr(b);
-    for (int i=0; i<b.capacity(); i++)
+    for (unsigned int i=0; i<b.capacity(); i++)
         res=encdec.decodeNextByte(b[i]);
     Packet *res1= new Packet();
     res1->createACKpacket(((short)3604));

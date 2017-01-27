@@ -156,7 +156,7 @@ vector<char>* MessageEncDec::encode(Packet *message) {
             ans->at(1)=opCodeBytes->at(1);
             ans->at(ans->size()-1)=0;
             string msgString = message->getString();
-            for (int i = 2; i < msgString.size() + 2; i++) {
+            for (unsigned int i = 2; i < msgString.size() + 2; i++) {
                 ans->at(i) = msgString.at(i-2);
             }
             break;
@@ -180,53 +180,38 @@ vector<char>* MessageEncDec::encode(Packet *message) {
             break;
         }
 
-//        case 4: {
-//            ans = std::vector<char>(4);
-//            ans[0] = opCodeBytes[0];
-//            ans[1] = opCodeBytes[1];
-//    //        std::vector<char> temp = shortToBytes(message->getBlockNumber());
-//            ans[2] = temp[0];
-//            ans[3] = temp[1];
-//            break;
-//        }
-//
-//        case 5: {
-////            ans = std::vector<char>(message->getString().getBytes()->length + 5);
-//            ans[0] = opCodeBytes[0];
-//            ans[1] = opCodeBytes[1];
-//            ans[ans.size() - 1] = 0;
-//  //          std::vector<char> temp = shortToBytes(message->getErrCode());
-//            ans[2] = temp[0];
-//            ans[3] = temp[1];
-////            std::vector<char> string = message->getString().getBytes();
-//            for (int i = 4; i < string.size() + 4; i++) {
-//   //             ans[i] = string[i - 4];
-//            }
-//            break;
-//        }
-//
-//        case 6:
-//        case 10: {
-//            ans = opCodeBytes;
-//            break;
-//        }
-//
-//        case 9: {
-////            ans = std::vector<char>(message->getString().getBytes()->length + 4);
-//            ans[0] = opCodeBytes[0];
-//            ans[1] = opCodeBytes[1];
-//            ans[ans.size() - 1] = 0;
-//            if (message->getAddedOrDeleted()) {
-//                ans[2] = 1;
-//            } else {
-//                ans[2] = 0;
-//            }
-////            std::vector<char> string = message->getString().getBytes();
-//            for (int i = 3; i < string.size() + 3; i++) {
-//    //            ans[i] = string[i - 3];
-//            }
-//            break;
-//        }
+        case 4: {
+            ans = new vector<char>(4);
+            ans->at(0) = opCodeBytes->at(0);
+            ans->at(1) = opCodeBytes->at(1);
+            vector<char>* temp = new vector<char>(2);
+            shortToBytes(message->getBlockNumber(),temp);
+            ans->at(2)=temp->at(0);
+            ans->at(3)=temp->at(1);
+            break;
+        }
+
+        case 5: {
+          ans =new vector<char>(message->getString().size() + 5);
+            ans->at(0) = opCodeBytes->at(0);
+            ans->at(1) = opCodeBytes->at(1);
+            ans->at(ans->size()-1)=0;
+            vector<char>* temp = new vector<char>(2);
+            shortToBytes(message->getErrCode(),temp);
+            ans->at(2)=temp->at(0);
+            ans->at(3)=temp->at(1);
+            string msgString = message->getString();
+            for (unsigned int i = 4; i < msgString.size() + 4; i++) {
+                ans->at(i) = msgString.at(i-4);
+            }
+            break;
+        }
+
+        case 6: case 10: {
+            ans = new vector<char>();
+            ans = opCodeBytes;
+            break;
+        }
     }
     return ans;
 }
