@@ -3,8 +3,10 @@
 #include <boost/thread/win32/thread_data.hpp>
 #include "../include/KeyBoardProtocol.h"
 #include "../include/Packet.h"
+#include "../include/SocketProtocol.h"
 
 using namespace std;
+
 
 KeyBoardProtocol::KeyBoardProtocol(ConnectionHandler *pHandler) : connectionHandler(pHandler) {
 
@@ -16,7 +18,7 @@ void KeyBoardProtocol::operator()() {
 }
 
 void KeyBoardProtocol::run() {
-    while (1) {
+    while (SocketProtocol::stayConnected) {
         const short bufsize = 512;
         char buf[bufsize];
         std::cin.getline(buf, bufsize);
@@ -35,6 +37,7 @@ void KeyBoardProtocol::run() {
                 {
                     p=new Packet();
                     p->createLOGRQpacket(extraData);
+                    SocketProtocol::action="logrq";
                 } else{
                     std::cout << "Error 1" << endl;
                 }
@@ -84,6 +87,7 @@ void KeyBoardProtocol::run() {
                 {
                     p=new Packet();
                     p->createDISCpacket();
+                    SocketProtocol::action="disc";
                 }
                 break;
             }

@@ -9,7 +9,6 @@
 
 class SocketProtocol {
 private:
-    queue<vector<char>> devidedDataBlocks;
     vector<char> data;
     Packet pack;
     bool isReading;
@@ -22,6 +21,8 @@ public:
     void operator()();
     void run();
     void printDirq();
+
+    static queue<vector<char>> devidedDataBlocks;
 };
 
 

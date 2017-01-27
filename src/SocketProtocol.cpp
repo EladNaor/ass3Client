@@ -4,6 +4,8 @@
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
 
+string SocketProtocol::action = "resting";
+bool SocketProtocol::stayConnected = true;
 SocketProtocol::SocketProtocol(ConnectionHandler *pHandler):connectionHandler(pHandler)  {
 
 }
@@ -15,16 +17,15 @@ void SocketProtocol::operator()() {
 }
 
 void SocketProtocol::run() {
-    Packet* answer = nullptr;
+    Packet *answer = nullptr;
 
-    while(stayConnected) {
+    while (stayConnected) {
         // Get back an answer: by using the expected number of bytes (len bytes + newline delimiter)
         // We could also use: connectionHandler.getline(answer) and then get the answer without the newline char at the end
         if (!connectionHandler->getPacketFromSocket(answer)) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
             break;
-        }
-        else{
+        } else {
             short opcode = answer->getOpCode();
             switch (opcode) {
                 case 3: {
@@ -32,7 +33,7 @@ void SocketProtocol::run() {
                     devidedDataBlocks.push(*answer->getData());
                     if (answer->getData()->size() < 512) {
                         if (isReading) {
-                            //read();
+                            //createFileFromQueue();
                         } else {
                             printDirq();
                         }
@@ -40,10 +41,10 @@ void SocketProtocol::run() {
                     break;
                 }
                 case 4:
-                    if(action.compare("disc")){
+                    if (action.compare("disc")) {
                         stayConnected = false;
-                    } else if(!action.compare("logrq")) {
-                        if(!devidedDataBlocks.empty()) {
+                    } else if (!action.compare("logrq")) {
+                        if (!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
                             pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
@@ -56,13 +57,13 @@ void SocketProtocol::run() {
                     break;
                 }
 
-                case 9:{
-                    string adOrDel="";
-                    if(answer->getAddedOrDeleted())
-                        adOrDel+="add";
+                case 9: {
+                    string adOrDel = "";
+                    if (answer->getAddedOrDeleted())
+                        adOrDel += "add";
                     else
-                        adOrDel+="del";
-                    cout << "BCAST " +adOrDel +" " + answer->getString() << endl;
+                        adOrDel += "del";
+                    cout << "BCAST " + adOrDel + " " + answer->getString() << endl;
                 }
             }
         }
@@ -76,4 +77,31 @@ string toPrint="";
             toPrint+=vec.at(i) + " ";
     }
     cout << toPrint << endl;
+}
+/*
+
+void SocketProtocol::createFileFromQueue() {
+    std::vector<char> chars = this->turnQueueToChars();
+    Path *path = Paths->get(L"./Files/",this->fileName);
+    try
+    {
+        Files::write(path, bytes);
+    }
+    catch (const IOException &e)
+    {
+        Packet *pack = new Packet();
+        pack->createERRORpacket(static_cast<short>(1), L"couldn't write to disc");
+        connections->send(connectionId, pack);
+        e->printStackTrace();
+    }
+    this->reset();
+}
+
+std::vector<char> SocketProtocol::turnQueueToChars() {
+    std::vector<char> fileChars = devidedDataBlocks.back();
+    int next = 0;
+    while (!devidedDataQueue->isEmpty()) {
+
+    }
+    return fileChars;
 }
