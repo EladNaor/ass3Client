@@ -4,6 +4,7 @@
 
 #include <boost/thread/win32/thread_data.hpp>
 #include "../include/KeyBoardProtocol.h"
+#include "../include/Packet.h"
 
 using namespace std;
 
@@ -24,52 +25,67 @@ void KeyBoardProtocol::run() {
         std::string line(buf);
         string command = line.substr(0, line.find(' '));
         string extraData = line.substr(command.length() + 1, line.length() - 1);
-        Packet *p = nullptr;
+        Packet* p = nullptr;
         int commandType = command.compare("LOGRQ") ? command.compare("DELRQ") ? command.compare("RRQ") ?
-                                                                                command.compare("WRQ")
-                                                                                ? command.compare("DIRQ")
-                                                                                  ? command.compare("DISC")
-                                                                                    ? 7 : 8 : 1 : 2 : 6 : 10 : 0;
+                                                                                  command.compare("WRQ")
+                                                                                  ? command.compare("DIRQ")
+                                                                                    ? command.compare("DISC")
+                                                                                      ? 7 : 8 : 1 : 2 : 6 : 10 : 0;
+
         switch (commandType) {
             case 7 : {
-                if (!extraData.empty()) {
-                    p = new Packet();
+                if (!extraData.empty())
+                {
+                    p=new Packet();
                     p->createLOGRQpacket(extraData);
+                } else{
+                    std::cout << "Error 1" << endl;
+                }
+                break;
+            }
+            case 8 : {
+                if (!extraData.empty())
+                {
+                    p=new Packet();
+                    p->createDELRQpacket(extraData);
+                } else{
+                    std::cout << "Error 1" << endl;
                 }
 
                 break;
             }
-            case 8 : {
-                if (!extraData.empty()) {
-                    p = new Packet();
-                    p->createDELRQpacket(extraData);
-                }
-                break;
-            }
             case 1  : {
-                if (!extraData.empty()) {
-                    p = new Packet();
+                if (!extraData.empty())
+                {
+                    p=new Packet();
                     p->createRRQpacket(extraData);
+                } else{
+                    std::cout << "Error 1" << endl;
                 }
                 break;
             }
             case 2 : {
-                if (!extraData.empty()) {
-                    p = new Packet();
+                if (!extraData.empty())
+                {
+                    p=new Packet();
                     p->createWRQpacket(extraData);
+                } else{
+                    std::cout << "Error 1" << endl;
                 }
                 break;
             }
             case 6 : {
-                if (extraData.empty()) {
-                    p = new Packet();
+                if (extraData.empty())
+                {
+                    p=new Packet();
                     p->createDIRQpacket();
                 }
                 break;
             }
             case 10: {
-                if (extraData.empty()) {
-                    p = new Packet();
+                if (extraData.empty())
+                {
+                    p=new Packet();
                     p->createDISCpacket();
                 }
                 break;
@@ -78,14 +94,13 @@ void KeyBoardProtocol::run() {
                 break;
 
         }
-        if (p != nullptr) {
+        if (p!= nullptr) {
+            vector<char> *encoded = encDec->encode(p);
 
-            if (!connectionHandler->sendPacketToSocket(p)) {
-                cout << "Error 0" << endl;
+            if (!connectionHandler->sendBytes(&encoded->at(0), encoded->size())) {
+                    std::cout << "Error 1" << endl;
                 break;
             }
-        } else {
-            cout << "Error 0" << endl;
         }
     }
 }
