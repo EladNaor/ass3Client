@@ -1,7 +1,4 @@
 #include "../include/ConnectionHandler.h"
-#include "../include/Packet.h"
-#include <boost/asio/ip/tcp.hpp>
-#include <iostream>
 
 using boost::asio::ip::tcp;
 using namespace std;
@@ -11,7 +8,8 @@ using std::cerr;
 using std::endl;
 using std::string;
  
-ConnectionHandler::ConnectionHandler(string host, short port): host_(host), port_(port), io_service_(), socket_(io_service_){}
+ConnectionHandler::ConnectionHandler(string host, short port): host_(host), port_(port), io_service_(), socket_(io_service_)
+,encDec(new MessageEncDec()){}
     
 ConnectionHandler::~ConnectionHandler() {
     close();
@@ -66,36 +64,24 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
     return true;
 }
  
-bool ConnectionHandler::getPacketFromSocket(Packet packet) {
-    return getFrameAscii(packet, '\0');
-}
+bool ConnectionHandler::getPacketFromSocket(Packet* packet) {
 
-bool ConnectionHandler::sendLine(std::string& line) {
-    return sendFrameAscii(line, '\0');
-}
- 
-bool ConnectionHandler::getFrameAscii(Packet frame, char delimiter) {
     char ch;
-    // Stop when we encounter the null character. 
+    // Stop when we encounter the null character.
     // Notice that the null character is not appended to the frame string.
     try {
-		do{
-			getBytes(&ch, 1);
-            //frame.append(1, ch);
-        }while (delimiter != ch);
+        while (packet == nullptr){
+            getBytes(&ch, 1);
+            packet= encDec->decodeNextByte(ch);
+        }
+
     } catch (std::exception& e) {
-        std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+        std::cout << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
     }
     return true;
 }
- 
-bool ConnectionHandler::sendFrameAscii(const std::string& frame, char delimiter) {
-	bool result=sendBytes(frame.c_str(),frame.length());
-	if(!result) return false;
-	return sendBytes(&delimiter,1);
-}
- 
+
 // Close down the connection properly.
 void ConnectionHandler::close() {
     try{
