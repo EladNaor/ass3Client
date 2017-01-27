@@ -38,7 +38,17 @@ void SocketProtocol::run() {
                     }
                     break;
                 }
-
+                case 4:
+                    if(action.compare("disc")){
+                        //disc
+                    } else if(!action.compare("logrq")) {
+                        if(!devidedDataBlocks.empty()) {
+                            data = *(answer->getData());
+                            pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
+                            connectionHandler->sendPacketToSocket(&pack);
+                        }
+                    }
+                    break;
 
                 case 5: {
                     cout << "Error " + answer->getErrCode() << endl;
