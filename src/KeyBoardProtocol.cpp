@@ -93,13 +93,13 @@ void KeyBoardProtocol::run() {
                 break;
 
         }
-        if (p!= nullptr) {
-            vector<char> *encoded = encDec->encode(p);
+        if (p != nullptr) {
 
-            if (!connectionHandler->sendBytes(&encoded->at(0), encoded->size())) {
-                    std::cout << "Error 1" << endl;
-                break;
+            if (!connectionHandler->sendPacketToSocket(p)) {
+                cout << "Error 0" << endl;
             }
+        } else {
+            cout << "Error 0" << endl;
         }
     }
 }

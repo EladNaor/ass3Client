@@ -33,7 +33,7 @@ void SocketProtocol::run() {
 
                 case 3:
                    pack.createACKpacket(answer->getBlockNumber());
-                    devidedDataBlocks.push(answer->getData());
+                    devidedDataBlocks.push(*answer->getData());
                     if(answer->getData()->size() < 512) {
                        if(isReading){
                             //read();
@@ -42,7 +42,7 @@ void SocketProtocol::run() {
                        }}
 
                 case 4:
-                    if(answer->getBlockNumber()>)
+                    if(answer->getBlockNumber())
                     if(!devidedDataBlocks.empty()) {
                         data = *(answer->getData());
                         pack.createDATApacket((short) answer->getBlockNumber()+1, (short) data.size(),data);
@@ -51,5 +51,9 @@ void SocketProtocol::run() {
 
         }
     }
+
+}
+
+void SocketProtocol::printDirq() {
 
 }
