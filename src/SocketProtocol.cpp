@@ -1,6 +1,9 @@
 #include <boost/thread/win32/thread_data.hpp>
 #include <io.h>
 #include <vector>
+#include <bits/ios_base.h>
+#include <ios>
+#include <fstream>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
 
@@ -78,30 +81,23 @@ string toPrint="";
     }
     cout << toPrint << endl;
 }
-/*
 
 void SocketProtocol::createFileFromQueue() {
-    std::vector<char> chars = this->turnQueueToChars();
-    Path *path = Paths->get(L"./Files/",this->fileName);
-    try
-    {
-        Files::write(path, bytes);
-    }
-    catch (const IOException &e)
-    {
-        Packet *pack = new Packet();
-        pack->createERRORpacket(static_cast<short>(1), L"couldn't write to disc");
-        connections->send(connectionId, pack);
-        e->printStackTrace();
-    }
-    this->reset();
+    std::ofstream fileToWrite("", std::ios::out | ios::binary);
+    std::vector<char>* file;
+    file = turnQueueToChars();
+    fileToWrite.is_open();
+    fileToWrite.write(file->data(), file->size());
+
+    fileToWrite.close();
 }
 
-std::vector<char> SocketProtocol::turnQueueToChars() {
-    std::vector<char> fileChars = devidedDataBlocks.back();
+std::vector<char>* SocketProtocol::turnQueueToChars() {
+    std::vector<char>* fileChars = &devidedDataBlocks.front();
     int next = 0;
-    while (!devidedDataQueue->isEmpty()) {
-
+    while (!(&devidedDataBlocks)->empty()) {
+        std::vector<char> *block = &devidedDataBlocks.front();
+        fileChars->insert(fileChars->end(),block->begin(),block->end());
     }
     return fileChars;
 }

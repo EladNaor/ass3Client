@@ -23,6 +23,10 @@ public:
     void printDirq();
 
     static queue<vector<char>> devidedDataBlocks;
+
+    vector<char>* turnQueueToChars();
+
+    void createFileFromQueue();
 };
 
 
