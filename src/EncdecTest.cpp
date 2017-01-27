@@ -23,9 +23,9 @@ int main (int argc, char *argv[]) {
     EncdecTest test;
 //  test.testRRQDecode(encdec); // 1
 //  test.testWRQDecode(encdec); // 2
-  test.testDataDecode(encdec); // 3
-//  test.testDataEncode(encdec); // 3
-  test.testACKDecode(encdec); // 4
+//  test.testDataDecode(encdec); // 3
+  test.testDataEncode(encdec); // 3
+//  test.testACKDecode(encdec); // 4
 // 	test.testACKEncode(encdec); // 4
 //  test.testErrorDecode(encdec); // 5
 //	test.testErrorEncode(encdec); // 5
@@ -69,7 +69,7 @@ void EncdecTest::testDataDecode (MessageEncDec& encdec){
     short opcode=res1->getOpCode();
     short packetSize=res1->getPacketSize();
     short blockNum=res1->getBlockNumber();
-    vector<char> dataBytes=res1->getData();
+    vector<char> dataBytes=*res1->getData();
     cout << "FLAG DataDecode 4" << endl;
     cout<< "After decoding the arr, we've got a packet!"<<endl;
     cout<<"The opcode is " << opcode << " The packetSize is " << packetSize <<"  and the blockNum is " << blockNum<<endl;

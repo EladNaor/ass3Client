@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Packet.h"
+using namespace::std;
 
 /// <summary>
 /// Created by Dor on 1/25/2017.
@@ -14,12 +15,12 @@ private:
     Packet *p = nullptr;
     short opCode = 0;
     std::vector<char>* charOfOpCode;
-    int i = 0;
+    unsigned int i = 0;
     std::vector<char>* charBuffer;
 
     //For DATA Packets:
-    int j = 0;
-    int counter = 0;
+    unsigned int j = 0;
+    unsigned int counter = 0;
     short packetSize = 0;
     short blockNumber = 0;
     std::vector<char> *charsOfDataPacketSize;
@@ -27,7 +28,7 @@ private:
     std::vector<char> *data = new std::vector<char>();
 
     //for ERROR Packets
-    int k = 0;
+    unsigned int k = 0;
     short errCode = 0;
     std::vector<char> *charsOfErrorCode;
 
@@ -54,7 +55,7 @@ public:
 
     short bytesToShort(char *bytesArr);
 
-    void shortToBytes(short num, char *bytesArr);
+    void shortToBytes(short num, vector<char>* bytesArr);
 
 private:
     std::string charBufferToString(std::vector<char> *charBuffer);

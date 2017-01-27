@@ -105,8 +105,8 @@ short Packet::getPacketSize() {
     return this->packetSize;
 }
 
-std::vector<char> Packet::getData() {
-    return this->data;
+vector<char> * Packet::getData() {
+    return &this->data;
 }
 
 short Packet::getErrCode() {

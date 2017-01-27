@@ -90,3 +90,8 @@ void ConnectionHandler::close() {
         std::cout << "closing failed: connection already closed" << std::endl;
     }
 }
+
+bool ConnectionHandler::sendPacketToSocket(Packet *pPacket) {
+    vector<char> *encoded = encDec->encode(pPacket);
+    return sendBytes(&encoded->at(0), encoded->size());
+}

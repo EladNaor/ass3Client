@@ -146,13 +146,11 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 }
 
 
-//std::vector<char> MessageEncDec::encode(Packet *message) {
-//    std::vector<char> opCodeBytes = shortToBytes(message->getOpCode());
-//    switch (message->getOpCode()) {
-//        case 1:
-//        case 2:
-//        case 7:
-//        case 8: {
+vector<char>* MessageEncDec::encode(Packet *message) {
+    vector<char> *opCodeBytes = new vector<char>(2);
+    shortToBytes((short) message->getOpCode(), opCodeBytes);
+    switch (message->getOpCode()) {
+//        case 1: case 2: case 7: case 8:{
 ////            ans = std::vector<char>(message->getString().getBytes()->length + 3);
 //            ans[0] = opCodeBytes[0];
 //            ans[1] = opCodeBytes[1];
@@ -163,23 +161,24 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 //            }
 //            break;
 //        }
-//
-//        case 3: {
-//            ans = std::vector<char>(message->getPacketSize() + 6);
-//            ans[0] = opCodeBytes[0];
-//            ans[1] = opCodeBytes[1];
-//            std::vector<char> temp = shortToBytes(message->getPacketSize());
-//            ans[2] = temp[0];
-//            ans[3] = temp[1];
-//            temp = shortToBytes(message->getBlockNumber());
-//            ans[4] = temp[0];
-//            ans[5] = temp[1];
-//            temp = message->getData();
-//            for (int i = 6; i < temp.size() + 6; i++) {
-//                ans[i] = temp[i - 6];
-//            }
-//            break;
-//        }
+
+        case 3: {
+            ans = std::vector<char>(message->getPacketSize() + 6);
+            ans.assign(0,opCodeBytes->at(0));
+            ans.assign(1,opCodeBytes->at(1));
+            vector<char>* temp;
+            shortToBytes(message->getPacketSize(),temp);
+            ans.assign(2,temp->at(0));
+            ans.assign(3,temp->at(1));
+            shortToBytes(message->getBlockNumber(),temp);
+            ans.assign(4,temp->at(0));
+            ans.assign(5,temp->at(1));
+            temp = message->getData();
+            for (unsigned int i = 6; i < temp->capacity() + 6; i++) {
+                ans.assign(i,temp->at(i - 6));
+            }
+            break;
+        }
 //
 //        case 4: {
 //            ans = std::vector<char>(4);
@@ -230,7 +229,8 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 //        }
 //    }
 //    return ans;
-//}
+    }
+}
 
 
 short MessageEncDec::bytesToShort(char *bytesArr) {
@@ -238,23 +238,18 @@ short MessageEncDec::bytesToShort(char *bytesArr) {
     result += (short) (bytesArr[1] & 0xff);
     return result;
 }
-
-void MessageEncDec::shortToBytes(short num, char *bytesArr) {
-    bytesArr[0] = ((num >> 8) & 0xFF);
-    bytesArr[1] = (num & 0xFF);
+void MessageEncDec::shortToBytes(short num, vector<char> *bytesArr) {
+    bytesArr->at(0) = ((num >> 8) & 0xFF);
+    bytesArr->at(1) = (num & 0xFF);
 }
 
 string MessageEncDec::charBufferToString(vector<char> *charBuffer) {
     charBuffer->shrink_to_fit();
     string ans = "";
-    for (int i = 0; i < charBuffer->size(); i++) {
+    for (unsigned int i = 0; i < charBuffer->size(); i++) {
         ans = ans + charBuffer->at(i);
     }
     return ans;
-}
-
-std::vector<char>*  MessageEncDec::encode(Packet *message) {
-    return new vector<char>();
 }
 
 
@@ -263,3 +258,7 @@ MessageEncDec::~MessageEncDec() {
     delete charBuffer;
     delete data;
 }
+
+
+
+

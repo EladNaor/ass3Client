@@ -81,7 +81,7 @@ public:
 
     virtual short getPacketSize();
 
-    virtual std::vector<char> getData();
+    virtual std::vector<char> * getData();
 
     virtual short getErrCode();
 

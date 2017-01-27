@@ -37,6 +37,7 @@ public:
 
     bool getPacketFromSocket(Packet *packet);
 
+    bool sendPacketToSocket(Packet *pPacket);
 }; //class ConnectionHandler
  
 #endif
