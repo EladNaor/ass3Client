@@ -25,8 +25,6 @@ void KeyBoardProtocol::run() {
         std::string line(buf);
         string command = line.substr(0, line.find(' '));
         string extraData = line.substr(command.length() + 1, line.length() - 1);
-        cout << command << endl;
-        cout << extraData << endl;
         Packet* p = nullptr;
         int commandType = command.compare("LOGRQ") ? command.compare("DELRQ") ? command.compare("RRQ") ?
                                                                                   command.compare("WRQ")
@@ -68,7 +66,7 @@ void KeyBoardProtocol::run() {
                 break;
             }
             case 6 : {
-                if (!extraData.empty())
+                if (extraData.empty())
                 {
                     p=new Packet();
                     p->createDIRQpacket();
@@ -76,7 +74,7 @@ void KeyBoardProtocol::run() {
                 break;
             }
             case 10: {
-                if (!extraData.empty())
+                if (extraData.empty())
                 {
                     p=new Packet();
                     p->createDISCpacket();
@@ -87,17 +85,13 @@ void KeyBoardProtocol::run() {
                 break;
 
         }
+        if (p!= nullptr) {
+            vector<char> *encoded = encDec->encode(p);
 
-        int len = line.length();
-        vector<char>* encoded = encDec->encode(p);
-
-        if (!connectionHandler->sendBytes( &encoded->at(0) , encoded->size())) {
-            std::cout << "Disconnected. Exiting...\n" << std::endl;
-            break;
+            if (!connectionHandler->sendBytes(&encoded->at(0), encoded->size())) {
+                //ERROR
+                break;
+            }
         }
-
-        // connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
-        std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
-
     }
 }
