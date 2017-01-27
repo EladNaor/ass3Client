@@ -14,23 +14,23 @@ class MessageEncDec {
 private:
     Packet *p = nullptr;
     short opCode = 0;
-    std::vector<char>* charOfOpCode;
+    vector<char>* charOfOpCode = new vector<char>(2);
     unsigned int i = 0;
-    std::vector<char>* charBuffer;
+    vector<char>* charBuffer = new vector<char>(512);
 
     //For DATA Packets:
     unsigned int j = 0;
     unsigned int counter = 0;
     short packetSize = 0;
     short blockNumber = 0;
-    std::vector<char> *charsOfDataPacketSize;
-    std::vector<char> *charsOfBlockNumber;
+    std::vector<char> *charsOfDataPacketSize= new vector<char>(2);
+    std::vector<char> *charsOfBlockNumber = new vector<char>(2);
     std::vector<char> *data = new std::vector<char>();
 
     //for ERROR Packets
     unsigned int k = 0;
     short errCode = 0;
-    std::vector<char> *charsOfErrorCode;
+    std::vector<char> *charsOfErrorCode= new vector<char>(2);
 
     //For Encoder
     std::vector<char>* ans;

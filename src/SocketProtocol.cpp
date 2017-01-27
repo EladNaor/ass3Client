@@ -9,6 +9,8 @@
 
 string SocketProtocol::action = "resting";
 bool SocketProtocol::stayConnected = true;
+queue<vector<char>> SocketProtocol::devidedDataBlocks = queue<vector<char>>();
+
 SocketProtocol::SocketProtocol(ConnectionHandler *pHandler):connectionHandler(pHandler)  {
 
 }
@@ -20,12 +22,12 @@ void SocketProtocol::operator()() {
 }
 
 void SocketProtocol::run() {
-    Packet *answer = nullptr;
 
     while (stayConnected) {
+        Packet* answer = nullptr;
         // Get back an answer: by using the expected number of bytes (len bytes + newline delimiter)
         // We could also use: connectionHandler.getline(answer) and then get the answer without the newline char at the end
-        if (!connectionHandler->getPacketFromSocket(answer)) {
+        if (!connectionHandler->getPacketFromSocket(&answer)) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
             break;
         } else {
@@ -43,20 +45,23 @@ void SocketProtocol::run() {
                     }
                     break;
                 }
-                case 4:
-                    if (action.compare("disc")) {
+                case 4:{
+                    cout<< "Ack " <<answer->getBlockNumber() << endl;
+                    if(action.compare("disc")){
                         stayConnected = false;
-                    } else if (!action.compare("logrq")) {
-                        if (!devidedDataBlocks.empty()) {
+                    } else if(!action.compare("logrq")) {
+                        if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
                             pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
                         }
                     }
                     break;
+                }
+
 
                 case 5: {
-                    cout << "Error " + answer->getErrCode() << endl;
+                    cout << "Error " << answer->getErrCode() << endl;
                     break;
                 }
 
@@ -75,7 +80,9 @@ void SocketProtocol::run() {
 
 void SocketProtocol::printDirq() {
 string toPrint="";
-    for_each(auto vector<char> vec : devidedDataBlocks){
+    while(!devidedDataBlocks.empty()){
+        vector<char>& vec=devidedDataBlocks.front();
+        devidedDataBlocks.pop();
         for(unsigned int i=0; i<vec.size(); i++)
             toPrint+=vec.at(i) + " ";
     }
@@ -94,10 +101,13 @@ void SocketProtocol::createFileFromQueue() {
 
 std::vector<char>* SocketProtocol::turnQueueToChars() {
     std::vector<char>* fileChars = &devidedDataBlocks.front();
+    devidedDataBlocks.pop();
     int next = 0;
     while (!(&devidedDataBlocks)->empty()) {
         std::vector<char> *block = &devidedDataBlocks.front();
+        devidedDataBlocks.pop();
         fileChars->insert(fileChars->end(),block->begin(),block->end());
     }
+
     return fileChars;
 }

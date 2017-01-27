@@ -35,7 +35,7 @@ public:
     // Close down the connection properly.
     void close();
 
-    bool getPacketFromSocket(Packet *packet);
+    bool getPacketFromSocket(Packet **packet);
 
     bool sendPacketToSocket(Packet *pPacket);
 }; //class ConnectionHandler

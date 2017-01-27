@@ -5,8 +5,8 @@ void MessageEncDec::init() {
     p = nullptr;
     i = 0;
     delOrAdd = false;
-    charOfOpCode = new vector<char>;
-    charBuffer = new vector<char>;
+    charOfOpCode = new vector<char>(2);
+    charBuffer = new vector<char>(512);
 }
 
 void MessageEncDec::errorInit() {
@@ -39,7 +39,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
     if (opCode == 0) {
         if (nextByte==0)
             charOfOpCode=new vector<char>(2);
-        charOfOpCode->assign(i, nextByte);
+        charOfOpCode->at(i)= nextByte;
         i++;
         if (i == 2) {
             opCode = bytesToShort(vecToArr(*charOfOpCode));
@@ -52,12 +52,12 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
         case 3: {
             if (j < 4) {
                 if (j == 0 || j == 1) {
-                    charsOfDataPacketSize->assign(j, nextByte);
+                    charsOfDataPacketSize->at(j)= nextByte;
                     j++;
                     return nullptr;
                 }
                 if (j == 2 || j == 3) {
-                    charsOfBlockNumber->assign(j - 2, nextByte);
+                    charsOfBlockNumber->at(j - 2)= nextByte;
                     if (j == 3) {
                         packetSize = bytesToShort(vecToArr(*charsOfDataPacketSize));
                         blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
@@ -67,9 +67,8 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
                 }
             } else {
                 if (counter <= packetSize) {
-                    data->assign(counter, nextByte);
+                    data->at(counter)= nextByte;
                     counter++;
-
                     if (counter == packetSize) {
                         p = new Packet();
                         p->createDATApacket(packetSize, blockNumber, *data);
@@ -84,7 +83,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 
         case 4: {
             if (k == 0 || k == 1) {
-                charsOfBlockNumber->assign(k, nextByte);
+                charsOfBlockNumber->at(k)= nextByte;
                 k++;
                 if (k == 2) {
                     blockNumber = bytesToShort(vecToArr(*charsOfBlockNumber));
@@ -100,7 +99,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
 
         case 5: {
             if (k < 2) {
-                charsOfErrorCode->assign(k, nextByte);
+                charsOfErrorCode->at(k)= nextByte;
                 k++;
                 return nullptr;
             }
@@ -109,7 +108,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
                 k++;
             }
             if (nextByte != 0) {
-                charBuffer->assign(counter, nextByte);
+                charBuffer->at(counter)= nextByte;
                 counter++;
                 return nullptr;
             } else {
@@ -129,7 +128,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
                 return nullptr;
             }
             if (nextByte != 0) {
-                charBuffer->assign(j - 1, nextByte);
+                charBuffer->at(j - 1)= nextByte;
                 j++;
                 return nullptr;
             } else {
@@ -228,11 +227,10 @@ void MessageEncDec::shortToBytes(short num, vector<char> *bytesArr) {
 }
 
 string MessageEncDec::charBufferToString(vector<char> *charBuffer) {
-    charBuffer->shrink_to_fit();
-    string ans = "";
-    for (unsigned int i = 0; i < charBuffer->size(); i++) {
-        ans = ans + charBuffer->at(i);
-    }
+    string ans = charBuffer->data();
+//    for (unsigned int i = 0; i < charBuffer->size(); i++) {
+//        ans = ans + charBuffer->at(i);
+//    }
     return ans;
 }
 

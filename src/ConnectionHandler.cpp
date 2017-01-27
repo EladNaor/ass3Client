@@ -64,15 +64,15 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
     return true;
 }
  
-bool ConnectionHandler::getPacketFromSocket(Packet* packet) {
+bool ConnectionHandler::getPacketFromSocket(Packet **packet) {
 
     char ch;
     // Stop when we encounter the null character.
     // Notice that the null character is not appended to the frame string.
     try {
-        while (packet == nullptr){
+        while (*packet == nullptr){
             getBytes(&ch, 1);
-            packet= encDec.decodeNextByte(ch);
+            *packet= encDec.decodeNextByte(ch);
         }
 
     } catch (std::exception& e) {

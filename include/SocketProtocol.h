@@ -14,6 +14,8 @@ private:
     bool isReading;
 
 public:
+
+    static queue<vector<char>> devidedDataBlocks;
     static string action;
     static bool stayConnected;
     ConnectionHandler* connectionHandler;
@@ -21,8 +23,6 @@ public:
     void operator()();
     void run();
     void printDirq();
-
-    static queue<vector<char>> devidedDataBlocks;
 
     vector<char>* turnQueueToChars();
 
