@@ -3,6 +3,7 @@
 //
 
 #include <boost/thread/win32/thread_data.hpp>
+#include <io.h>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
 
@@ -26,6 +27,27 @@ void SocketProtocol::run() {
             break;
         } else
         {
+            short opcode = answer->getOpCode();
+
+            switch (opcode){
+
+                case 3:
+                   pack.createACKpacket(answer->getBlockNumber());
+                    devidedDataBlocks.push(answer->getData());
+                    if(answer->getData()->size() < 512) {
+                       if(isReading){
+                            //read();
+                       } else{
+                           printDirq();
+                       }}
+
+                case 4:
+                    if(answer->getBlockNumber()>)
+                    if(!devidedDataBlocks.empty()) {
+                        data = *(answer->getData());
+                        pack.createDATApacket((short) answer->getBlockNumber()+1, (short) data.size(),data);
+                    }
+            }
 
         }
     }
