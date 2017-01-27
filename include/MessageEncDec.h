@@ -33,7 +33,7 @@ private:
     std::vector<char> *charsOfErrorCode;
 
     //For Encoder
-    std::vector<char> ans;
+    std::vector<char>* ans;
 
     //For BCAST Packet
     bool delOrAdd = false;

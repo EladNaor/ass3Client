@@ -14,11 +14,11 @@ private:
 	const std::string host_;
 	const short port_;
 	boost::asio::io_service io_service_;   // Provides core I/O functionality
-	tcp::socket socket_; 
- 
+	tcp::socket socket_;
+    MessageEncDec encDec;
+
 public:
     ConnectionHandler(std::string host, short port);
-    MessageEncDec* encDec;
     virtual ~ConnectionHandler();
  
     // Connect to the remote machine

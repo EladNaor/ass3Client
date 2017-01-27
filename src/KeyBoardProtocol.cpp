@@ -24,14 +24,13 @@ void KeyBoardProtocol::run() {
         std::cin.getline(buf, bufsize);
         std::string line(buf);
         string command = line.substr(0, line.find(' '));
-        string extraData = line.substr(command.length() + 1, line.length() - 1);
-        Packet* p = nullptr;
+        string extraData = command.length()!=line.length()? line.substr(command.length() + 1, line.length() - 1):"";
+        Packet *p = nullptr;
         int commandType = command.compare("LOGRQ") ? command.compare("DELRQ") ? command.compare("RRQ") ?
-                                                                                  command.compare("WRQ")
-                                                                                  ? command.compare("DIRQ")
-                                                                                    ? command.compare("DISC")
-                                                                                      ? 7 : 8 : 1 : 2 : 6 : 10 : 0;
-
+                                                                                command.compare("WRQ")
+                                                                                ? command.compare("DIRQ")
+                                                                                  ? command.compare("DISC")
+                                                                                    ?0:10:6:2:1:8:7;
         switch (commandType) {
             case 7 : {
                 if (!extraData.empty())
