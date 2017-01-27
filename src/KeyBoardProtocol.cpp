@@ -1,6 +1,4 @@
-//
-// Created by Orel Hazan on 25/01/2017.
-//
+
 
 #include <boost/thread/win32/thread_data.hpp>
 #include "../include/KeyBoardProtocol.h"

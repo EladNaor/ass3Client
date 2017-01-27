@@ -9,13 +9,14 @@
 
 class SocketProtocol {
 private:
-    string action;
     queue<vector<char>> devidedDataBlocks;
     vector<char> data;
     Packet pack;
     bool isReading;
 
 public:
+    static string action;
+    static bool stayConnected;
     ConnectionHandler* connectionHandler;
     SocketProtocol(ConnectionHandler *pHandler);
     void operator()();

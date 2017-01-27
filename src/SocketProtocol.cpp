@@ -9,6 +9,7 @@ SocketProtocol::SocketProtocol(ConnectionHandler *pHandler):connectionHandler(pH
 }
 
 void SocketProtocol::operator()() {
+    stayConnected = true;
     run();
     boost::this_thread::yield();
 }
@@ -16,7 +17,7 @@ void SocketProtocol::operator()() {
 void SocketProtocol::run() {
     Packet* answer = nullptr;
 
-    while(1) {
+    while(stayConnected) {
         // Get back an answer: by using the expected number of bytes (len bytes + newline delimiter)
         // We could also use: connectionHandler.getline(answer) and then get the answer without the newline char at the end
         if (!connectionHandler->getPacketFromSocket(answer)) {
@@ -40,7 +41,7 @@ void SocketProtocol::run() {
                 }
                 case 4:
                     if(action.compare("disc")){
-                        //disc
+                        stayConnected = false;
                     } else if(!action.compare("logrq")) {
                         if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
