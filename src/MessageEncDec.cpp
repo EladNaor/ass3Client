@@ -37,6 +37,8 @@ vector<char> MessageEncDec::arrToVec(char *c) {
 
 Packet *MessageEncDec::decodeNextByte(char nextByte) {
     if (opCode == 0) {
+        if (nextByte==0)
+            charOfOpCode=new vector<char>(2);
         charOfOpCode->assign(i, nextByte);
         i++;
         if (i == 2) {
@@ -261,4 +263,3 @@ MessageEncDec::~MessageEncDec() {
     delete charBuffer;
     delete data;
 }
-
