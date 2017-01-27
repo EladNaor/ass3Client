@@ -1,9 +1,6 @@
-//
-// Created by Orel Hazan on 25/01/2017.
-//
-
 #include <boost/thread/win32/thread_data.hpp>
 #include <io.h>
+#include <vector>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
 
@@ -25,35 +22,47 @@ void SocketProtocol::run() {
         if (!connectionHandler->getPacketFromSocket(answer)) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
             break;
-        } else
-        {
+        }
+        else{
             short opcode = answer->getOpCode();
-
-            switch (opcode){
-
-                case 3:
-                   pack.createACKpacket(answer->getBlockNumber());
+            switch (opcode) {
+                case 3: {
+                    pack.createACKpacket(answer->getBlockNumber());
                     devidedDataBlocks.push(*answer->getData());
-                    if(answer->getData()->size() < 512) {
-                       if(isReading){
+                    if (answer->getData()->size() < 512) {
+                        if (isReading) {
                             //read();
-                       } else{
-                           printDirq();
-                       }}
-
-                case 4:
-                    if(answer->getBlockNumber())
-                    if(!devidedDataBlocks.empty()) {
-                        data = *(answer->getData());
-                        pack.createDATApacket((short) answer->getBlockNumber()+1, (short) data.size(),data);
+                        } else {
+                            printDirq();
+                        }
                     }
-            }
+                    break;
+                }
 
+
+                case 5: {
+                    cout << "Error " + answer->getErrCode() << endl;
+                    break;
+                }
+
+                case 9:{
+                    string adOrDel="";
+                    if(answer->getAddedOrDeleted())
+                        adOrDel+="add";
+                    else
+                        adOrDel+="del";
+                    cout << "BCAST " +adOrDel +" " + answer->getString() << endl;
+                }
+            }
         }
     }
-
 }
 
 void SocketProtocol::printDirq() {
-
+string toPrint="";
+    for_each(auto vector<char> vec : devidedDataBlocks){
+        for(unsigned int i=0; i<vec.size(); i++)
+            toPrint+=vec.at(i) + " ";
+    }
+    cout << toPrint << endl;
 }

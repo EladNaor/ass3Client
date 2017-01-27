@@ -14,15 +14,12 @@ private:
     vector<char> data;
     Packet pack;
     bool isReading;
-public:
 
+public:
     ConnectionHandler* connectionHandler;
     SocketProtocol(ConnectionHandler *pHandler);
-
     void operator()();
-
     void run();
-
     void printDirq();
 };
 

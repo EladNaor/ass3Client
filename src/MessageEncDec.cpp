@@ -236,7 +236,6 @@ string MessageEncDec::charBufferToString(vector<char> *charBuffer) {
     return ans;
 }
 
-
 MessageEncDec::~MessageEncDec() {
     delete p;
     delete charBuffer;
