@@ -47,16 +47,16 @@ void SocketProtocol::run() {
                 }
                 case 4:{
                     cout<< "Ack " <<answer->getBlockNumber() << endl;
-                    if(action.compare("disc")){
+                    if(action.compare("disc")==0){
                         stayConnected = false;
-                    } else if(!action.compare("logrq")) {
+                    } else if(!action.compare("logrq")==0) {
                         if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
                             pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
                         }
                     }
-                    break;
+                    break;0;
                 }
 
 

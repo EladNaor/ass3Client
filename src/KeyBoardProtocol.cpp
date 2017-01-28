@@ -100,6 +100,12 @@ void KeyBoardProtocol::run() {
             if (!connectionHandler->sendPacketToSocket(p)) {
                 cout << "Error 0" << endl;
             }
+            else
+            {
+                //so the keyboard thread won't do the main while again
+                // and get stuck waiting for input
+                while (SocketProtocol::stayConnected && SocketProtocol::action.compare("disc")==0) {}
+            }
         } else {
             cout << "Error 0" << endl;
         }
