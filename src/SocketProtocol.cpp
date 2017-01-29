@@ -1,11 +1,9 @@
 #include <boost/thread/win32/thread_data.hpp>
-#include <io.h>
-#include <vector>
-#include <bits/ios_base.h>
-#include <ios>
 #include <fstream>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
+using namespace std;
+
 
 string SocketProtocol::action = "resting";
 bool SocketProtocol::stayConnected = true;
@@ -38,7 +36,7 @@ void SocketProtocol::run() {
                     devidedDataBlocks.push(*answer->getData());
                     if (answer->getData()->size() < 512) {
                         if (isReading) {
-                            //createFileFromQueue();
+                            createFileFromQueue();
                         } else {
                             printDirq();
                         }
@@ -52,7 +50,7 @@ void SocketProtocol::run() {
                     } else if(!action.compare("logrq")==0) {
                         if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
-                            pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
+                            pack.createDATApacket((short)(answer->getBlockNumber() + 1), (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
                         }
                     }
@@ -73,6 +71,8 @@ void SocketProtocol::run() {
                         adOrDel += "del";
                     cout << "BCAST " + adOrDel + " " + answer->getString() << endl;
                 }
+                default:
+                    break;
             }
         }
     }
@@ -90,24 +90,21 @@ string toPrint="";
 }
 
 void SocketProtocol::createFileFromQueue() {
-    std::ofstream fileToWrite("", std::ios::out | ios::binary);
-    std::vector<char>* file;
+    ofstream fileToWrite("", ios::out | ios::binary);
+    vector<char>* file;
     file = turnQueueToChars();
     fileToWrite.is_open();
     fileToWrite.write(file->data(), file->size());
-
     fileToWrite.close();
 }
 
-std::vector<char>* SocketProtocol::turnQueueToChars() {
-    std::vector<char>* fileChars = &devidedDataBlocks.front();
+vector<char>* SocketProtocol::turnQueueToChars() {
+    vector<char>* fileChars = &devidedDataBlocks.front();
     devidedDataBlocks.pop();
-    int next = 0;
     while (!(&devidedDataBlocks)->empty()) {
-        std::vector<char> *block = &devidedDataBlocks.front();
+        vector<char> *block = &devidedDataBlocks.front();
         devidedDataBlocks.pop();
         fileChars->insert(fileChars->end(),block->begin(),block->end());
     }
-
     return fileChars;
 }
