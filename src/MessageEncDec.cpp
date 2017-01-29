@@ -21,7 +21,7 @@ void MessageEncDec::dataInit() {
     counter = 0;
     charsOfDataPacketSize = new vector<char>(2);
     charsOfBlockNumber = new vector<char>(2);
-    data = new vector<char>();
+    data = new vector<char>(512);
 }
 
 char *MessageEncDec::vecToArr(vector<char> &v) {

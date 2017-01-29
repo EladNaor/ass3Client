@@ -65,6 +65,8 @@ void KeyBoardProtocol::run() {
                 {
                     p=new Packet();
                     p->createRRQpacket(extraData);
+                    SocketProtocol::isReading = true;
+                    SocketProtocol::fileName=extraData;
                 } else{
                     std::cout << "Error 1" << endl;
                 }

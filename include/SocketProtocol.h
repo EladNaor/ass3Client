@@ -14,10 +14,11 @@ private:
 
     vector<char> data;
     Packet pack;
-    bool isReading;
 public:
     SocketProtocol& operator=(const SocketProtocol &rhs);
 
+    static bool isReading;
+    static string fileName;
 public:
     virtual ~SocketProtocol();
 

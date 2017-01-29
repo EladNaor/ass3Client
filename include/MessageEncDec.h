@@ -34,7 +34,7 @@ private:
     short blockNumber = 0;
     std::vector<char> *charsOfDataPacketSize= new vector<char>(2);
     std::vector<char> *charsOfBlockNumber = new vector<char>(2);
-    std::vector<char> *data = new std::vector<char>();
+    std::vector<char> *data = new std::vector<char>(512);
 
     //for ERROR Packets
     unsigned int k = 0;

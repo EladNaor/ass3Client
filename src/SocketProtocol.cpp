@@ -9,6 +9,9 @@
 
 string SocketProtocol::action = "resting";
 bool SocketProtocol::stayConnected = true;
+bool SocketProtocol::isReading = false;
+string SocketProtocol::fileName = "";
+
 queue<vector<char>> SocketProtocol::devidedDataBlocks = queue<vector<char>>();
 
 void SocketProtocol::operator()() {
@@ -32,9 +35,9 @@ void SocketProtocol::run() {
                 case 3: {
                     pack.createACKpacket(answer->getBlockNumber());
                     devidedDataBlocks.push(*answer->getData());
-                    if (answer->getData()->size() < 512) {
+                    if (answer->getPacketSize() < 512) {
                         if (isReading) {
-                            //createFileFromQueue();
+                            createFileFromQueue();
                         } else {
                             printDirq();
                         }
@@ -86,7 +89,7 @@ string toPrint="";
 }
 
 void SocketProtocol::createFileFromQueue() {
-    std::ofstream fileToWrite("", std::ios::out | ios::binary);
+    std::ofstream fileToWrite(fileName, std::ios::out | ios::binary);
     std::vector<char>* file;
     file = turnQueueToChars();
     fileToWrite.is_open();
@@ -120,8 +123,8 @@ SocketProtocol& SocketProtocol::operator=(const SocketProtocol &rhs) {
     return *this;
 }
 
-SocketProtocol::SocketProtocol(ConnectionHandler *connectionHandler) : data(), pack(), isReading(),
+SocketProtocol::SocketProtocol(ConnectionHandler *connectionHandler) : data(), pack(),
                                                                        connectionHandler(connectionHandler) {}
 
-SocketProtocol::SocketProtocol(const SocketProtocol& sp) : data(sp.data), pack(sp.pack), isReading(sp.isReading),
+SocketProtocol::SocketProtocol(const SocketProtocol& sp) : data(sp.data), pack(sp.pack),
                                                                        connectionHandler(sp.connectionHandler) {}
