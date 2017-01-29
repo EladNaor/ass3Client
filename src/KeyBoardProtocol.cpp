@@ -119,7 +119,6 @@ void KeyBoardProtocol::run() {
 }
 
 KeyBoardProtocol::~KeyBoardProtocol() {
-    delete(this->connectionHandler);
 
 }
 
