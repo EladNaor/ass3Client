@@ -11,6 +11,12 @@
 class KeyBoardProtocol {
 
 public:
+    KeyBoardProtocol(const KeyBoardProtocol &aProtocol);
+
+    KeyBoardProtocol& operator=(const KeyBoardProtocol &rhs) ;
+
+    virtual ~KeyBoardProtocol();
+
     ConnectionHandler* connectionHandler;
     KeyBoardProtocol(ConnectionHandler *pHandler);
 

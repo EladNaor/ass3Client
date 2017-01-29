@@ -12,6 +12,12 @@ KeyBoardProtocol::KeyBoardProtocol(ConnectionHandler *pHandler) : connectionHand
 
 }
 
+
+KeyBoardProtocol::KeyBoardProtocol(const KeyBoardProtocol& aProtocol) : connectionHandler(aProtocol.connectionHandler) {
+
+}
+
+
 void KeyBoardProtocol::operator()() {
     run();
     boost::this_thread::yield();
@@ -110,4 +116,14 @@ void KeyBoardProtocol::run() {
             cout << "Error 0" << endl;
         }
     }
+}
+
+KeyBoardProtocol::~KeyBoardProtocol() {
+    delete(this->connectionHandler);
+
+}
+
+KeyBoardProtocol& KeyBoardProtocol::operator=(const KeyBoardProtocol &rhs)  {
+     connectionHandler = rhs.connectionHandler;
+    return *this;
 }

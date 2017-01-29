@@ -10,6 +10,15 @@ using namespace::std;
 
 
 class MessageEncDec {
+public:
+
+    MessageEncDec(const MessageEncDec &encDec);
+
+    MessageEncDec& operator=(const MessageEncDec &rhs);
+
+private:
+public:
+    MessageEncDec();
 
 private:
     Packet *p = nullptr;
@@ -43,11 +52,11 @@ public:
     virtual ~MessageEncDec();
 
 
-    virtual void errorInit();
+        virtual void errorInit();
 
-    virtual void init();
+        virtual void init();
 
-    virtual void dataInit();
+        virtual void dataInit();
 
     virtual Packet *decodeNextByte(char nextByte);
 

@@ -1,17 +1,15 @@
 #include <boost/thread/win32/thread_data.hpp>
+#include <io.h>
+#include <vector>
+#include <bits/ios_base.h>
+#include <ios>
 #include <fstream>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
-using namespace std;
-
 
 string SocketProtocol::action = "resting";
 bool SocketProtocol::stayConnected = true;
 queue<vector<char>> SocketProtocol::devidedDataBlocks = queue<vector<char>>();
-
-SocketProtocol::SocketProtocol(ConnectionHandler *pHandler):connectionHandler(pHandler)  {
-
-}
 
 void SocketProtocol::operator()() {
     stayConnected = true;
@@ -36,7 +34,7 @@ void SocketProtocol::run() {
                     devidedDataBlocks.push(*answer->getData());
                     if (answer->getData()->size() < 512) {
                         if (isReading) {
-                            createFileFromQueue();
+                            //createFileFromQueue();
                         } else {
                             printDirq();
                         }
@@ -50,11 +48,11 @@ void SocketProtocol::run() {
                     } else if(!action.compare("logrq")==0) {
                         if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
-                            pack.createDATApacket((short)(answer->getBlockNumber() + 1), (short) data.size(), data);
+                            pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
                         }
                     }
-                    break;0;
+                    break;
                 }
 
 
@@ -71,8 +69,6 @@ void SocketProtocol::run() {
                         adOrDel += "del";
                     cout << "BCAST " + adOrDel + " " + answer->getString() << endl;
                 }
-                default:
-                    break;
             }
         }
     }
@@ -90,21 +86,42 @@ string toPrint="";
 }
 
 void SocketProtocol::createFileFromQueue() {
-    ofstream fileToWrite("", ios::out | ios::binary);
-    vector<char>* file;
+    std::ofstream fileToWrite("", std::ios::out | ios::binary);
+    std::vector<char>* file;
     file = turnQueueToChars();
     fileToWrite.is_open();
     fileToWrite.write(file->data(), file->size());
+
     fileToWrite.close();
 }
 
-vector<char>* SocketProtocol::turnQueueToChars() {
-    vector<char>* fileChars = &devidedDataBlocks.front();
+std::vector<char>* SocketProtocol::turnQueueToChars() {
+    std::vector<char>* fileChars = &devidedDataBlocks.front();
     devidedDataBlocks.pop();
     while (!(&devidedDataBlocks)->empty()) {
-        vector<char> *block = &devidedDataBlocks.front();
+        std::vector<char> *block = &devidedDataBlocks.front();
         devidedDataBlocks.pop();
         fileChars->insert(fileChars->end(),block->begin(),block->end());
     }
+
     return fileChars;
 }
+
+SocketProtocol::~SocketProtocol() {
+
+}
+
+SocketProtocol& SocketProtocol::operator=(const SocketProtocol &rhs) {
+    data = rhs.data ;
+           pack = rhs.pack ;
+           isReading = rhs.isReading;
+           connectionHandler = rhs.connectionHandler;
+
+    return *this;
+}
+
+SocketProtocol::SocketProtocol(ConnectionHandler *connectionHandler) : data(), pack(), isReading(),
+                                                                       connectionHandler(connectionHandler) {}
+
+SocketProtocol::SocketProtocol(const SocketProtocol& sp) : data(sp.data), pack(sp.pack), isReading(sp.isReading),
+                                                                       connectionHandler(sp.connectionHandler) {}

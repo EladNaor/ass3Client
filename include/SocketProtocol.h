@@ -8,10 +8,18 @@
 #include "ConnectionHandler.h"
 
 class SocketProtocol {
+public:
+    SocketProtocol(const SocketProtocol &sp);
 private:
+
     vector<char> data;
     Packet pack;
     bool isReading;
+public:
+    SocketProtocol& operator=(const SocketProtocol &rhs);
+
+public:
+    virtual ~SocketProtocol();
 
 public:
 

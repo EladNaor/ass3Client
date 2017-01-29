@@ -5,7 +5,7 @@
 
 
 class Packet {
-
+public:
     //All fields associated with a given packet
 private:
     short opcode = 0;

@@ -1,6 +1,7 @@
 #include "../include/Packet.h"
 
 using namespace std;
+
 void Packet::createRRQpacket(std::string filename) {
     this->opcode = 1;
     this->string = filename;
@@ -18,7 +19,7 @@ void Packet::createDATApacket(short packetSize, short blockNumber, std::vector<c
     this->packetSize = packetSize;
     this->blockNumber = blockNumber;
     this->data = std::vector<char>(data.size());
-    for (int i = 0; i < this->data.size(); i++) {
+    for (unsigned int i = 0; i < this->data.size(); i++) {
         this->data[i] = data[i];
     }
     this->endByte = true;
@@ -105,7 +106,7 @@ short Packet::getPacketSize() {
     return this->packetSize;
 }
 
-vector<char> * Packet::getData() {
+vector<char> *Packet::getData() {
     return &this->data;
 }
 
@@ -117,5 +118,7 @@ bool Packet::getAddedOrDeleted() {
     return this->addedOrDeleted;
 }
 
-
-Packet::Packet(){}
+Packet::Packet() : opcode(), blockNumber(),
+                   string(), endByte(),
+                   addedOrDeleted(), data(),
+                   packetSize(), errCode() {}
