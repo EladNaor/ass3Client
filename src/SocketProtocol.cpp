@@ -48,7 +48,7 @@ void SocketProtocol::run() {
                     break;
                 }
                 case 4:{
-                    cout<< "Ack " <<answer->getBlockNumber() << endl;
+                    cout<< "ACK " <<answer->getBlockNumber() << endl;
                     if(action.compare("disc")==0){
                         stayConnected = false;
                     } else if(!action.compare("logrq")==0) {

@@ -78,6 +78,7 @@ void KeyBoardProtocol::run() {
                     p->createWRQpacket(extraData);
                     SocketProtocol::action="wrq";
                     writeFileIntoQueue(extraData);
+                    SocketProtocol::fileName=extraData;
                 } else{
                     std::cout << "Error 1" << endl;
                 }
@@ -116,7 +117,7 @@ void KeyBoardProtocol::run() {
                 while (SocketProtocol::stayConnected && SocketProtocol::action.compare("disc")==0) {}
             }
         } else {
-            cout << "Error 0" << endl;
+            cout << "Error 4" << endl;
         }
     }
 }
