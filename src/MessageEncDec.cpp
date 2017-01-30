@@ -172,8 +172,12 @@ vector<char> *MessageEncDec::encode(Packet *message) {
             break;
         }
 
+
         case 3: {
-            ans = new vector<char>(message->getPacketSize() + 6);
+            unsigned int size = (unsigned int) message->getPacketSize();
+            if (size==0)
+                size = 1;
+            ans = new vector<char>(size + 6);
             ans->at(0) = opCodeBytes->at(0);
             ans->at(1) = opCodeBytes->at(1);
             vector<char> *temp = new vector<char>();
@@ -187,6 +191,8 @@ vector<char> *MessageEncDec::encode(Packet *message) {
             for (unsigned int i = 6; i < temp->size() + 6; i++) {
                 ans->at(i) = temp->at(i - 6);
             }
+            if (message->getPacketSize()==0)
+                ans->at(ans->size() - 1) = 0;
             break;
         }
 
