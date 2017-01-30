@@ -33,7 +33,7 @@ public:
     void run();
     void printDirq();
 
-    vector<char>* turnQueueToChars();
+    vector<char> turnQueueToChars();
 
     void createFileFromQueue();
 };

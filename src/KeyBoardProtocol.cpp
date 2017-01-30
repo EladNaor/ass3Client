@@ -44,8 +44,6 @@ void KeyBoardProtocol::run() {
                     p=new Packet();
                     p->createLOGRQpacket(extraData);
                     SocketProtocol::action="logrq";
-                } else{
-                    std::cout << "Error 1" << endl;
                 }
                 break;
             }

@@ -30,10 +30,13 @@ void SocketProtocol::run() {
             switch (opcode) {
                 case 3: {
                     pack.createACKpacket(answer->getBlockNumber());
-                    devidedDataBlocks.push(*answer->getData());
+                    std::vector<char> data;
+                    copy ( answer->getData()->begin(), answer->getData()->begin() + answer->getPacketSize(), std::back_inserter(data) );
+                    devidedDataBlocks.push(data);
                     if (answer->getPacketSize() < 512) {
                         if (isReading) {
                             createFileFromQueue();
+                            cout<< "RRQ " << fileName << " complete" << endl;
                         } else {
                             printDirq();
                         }
@@ -85,25 +88,35 @@ string toPrint="";
 }
 
 void SocketProtocol::createFileFromQueue() {
-    std::ofstream fileToWrite(fileName, std::ios::out | ios::binary);
-    std::vector<char>* file;
-    file = turnQueueToChars();
-    fileToWrite.is_open();
-    fileToWrite.write(file->data(), file->size());
+    std::ofstream fileToWrite;
+    fileToWrite.open(fileName, std::ios::out | ios::binary);
 
-    fileToWrite.close();
+    if (fileToWrite.is_open()) {
+        vector<char> block = turnQueueToChars();
+        fileToWrite.write(block.data(), block.size());
+
+        fileToWrite.close();
+    }
+    else
+    {
+        cout<< "Error 1"<< endl;
+        Packet* err = new Packet();
+        err->createERRORpacket(1, "");
+        connectionHandler->sendPacketToSocket(err);
+    }
 }
 
-std::vector<char>* SocketProtocol::turnQueueToChars() {
-    std::vector<char>* fileChars = &devidedDataBlocks.front();
-    devidedDataBlocks.pop();
-    while (!(&devidedDataBlocks)->empty()) {
-        std::vector<char> *block = &devidedDataBlocks.front();
+vector<char> SocketProtocol::turnQueueToChars() {
+    vector<char> blockFinal;
+    vector<char> block;
+    while (!(&devidedDataBlocks)->empty())
+    {
+        block = devidedDataBlocks.front();
         devidedDataBlocks.pop();
-        fileChars->insert(fileChars->end(),block->begin(),block->end());
+        blockFinal.insert(blockFinal.end(),block.begin(), block.end());
     }
 
-    return fileChars;
+    return blockFinal;
 }
 
 SocketProtocol::~SocketProtocol() {
