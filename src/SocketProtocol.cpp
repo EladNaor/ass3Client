@@ -47,11 +47,14 @@ void SocketProtocol::run() {
                     }
                     break;
                 }
+
                 case 4:{
                     cout<< "ACK " <<answer->getBlockNumber() << endl;
                     if(action.compare("disc")==0){
                         stayConnected = false;
-                    } else if(!action.compare("logrq")==0) {
+                    }
+                    else if(action.compare("wrq")==0)
+                    {
                         if(!devidedDataBlocks.empty()) {
                             data = devidedDataBlocks.front();
                             pack.createDATApacket((short) data.size(),(short) (answer->getBlockNumber() + 1), data);
@@ -64,7 +67,8 @@ void SocketProtocol::run() {
                             fileName = "";
                             action = "resting";
                         }
-                    } else
+                    }
+                    else if(action.compare("logrq")==0)
                     {
                         action = "resting";
                     }
