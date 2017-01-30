@@ -1,8 +1,4 @@
 #include <boost/thread.hpp>
-#include <io.h>
-#include <vector>
-#include <bits/ios_base.h>
-#include <ios>
 #include <fstream>
 #include "../include/SocketProtocol.h"
 #include "../include/Packet.h"
