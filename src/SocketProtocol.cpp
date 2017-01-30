@@ -77,14 +77,24 @@ void SocketProtocol::run() {
 }
 
 void SocketProtocol::printDirq() {
-string toPrint="";
-    while(!devidedDataBlocks.empty()){
-        vector<char>& vec=devidedDataBlocks.front();
+    string toPrint = "";
+    while (!devidedDataBlocks.empty()) {
+        vector<char> &vec = devidedDataBlocks.front();
+        // std:: string cur(vec.begin(), vec.end());
+
+        for (unsigned int i = 0; i < vec.size(); i++) {
+            char curr = vec.at(i);
+            if (curr == '\n') {
+                cout << toPrint << endl;
+                toPrint="";
+            } else
+                toPrint = toPrint + curr;
+
+        }
+
         devidedDataBlocks.pop();
-        for(unsigned int i=0; i<vec.size(); i++)
-            toPrint+=vec.at(i) + " ";
+
     }
-    cout << toPrint << endl;
 }
 
 void SocketProtocol::createFileFromQueue() {
