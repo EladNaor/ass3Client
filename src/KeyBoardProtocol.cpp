@@ -1,6 +1,7 @@
 
 
 #include <boost/thread.hpp>
+#include <fstream>
 #include "../include/KeyBoardProtocol.h"
 #include "../include/Packet.h"
 #include "../include/SocketProtocol.h"
@@ -75,6 +76,8 @@ void KeyBoardProtocol::run() {
                 {
                     p=new Packet();
                     p->createWRQpacket(extraData);
+                    SocketProtocol::action="wrq";
+                    writeFileIntoQueue(extraData);
                 } else{
                     std::cout << "Error 1" << endl;
                 }
@@ -125,4 +128,29 @@ KeyBoardProtocol::~KeyBoardProtocol() {
 KeyBoardProtocol& KeyBoardProtocol::operator=(const KeyBoardProtocol &rhs)  {
      connectionHandler = rhs.connectionHandler;
     return *this;
+}
+
+void KeyBoardProtocol::writeFileIntoQueue(string fileName) {
+    std::ifstream fileToRead;
+    fileToRead.open(fileName, std::ios::app | ios::binary);
+
+    if (fileToRead.is_open()) {
+        short size = 512;
+    while (!fileToRead.eof()) {
+        vector<char>* getData = new vector<char>(512);
+            fileToRead.read(getData->data(), size);
+
+            if (fileToRead.eof())
+                size = (short) fileToRead.gcount();
+
+        getData->resize((unsigned int) size);
+        SocketProtocol::devidedDataBlocks.push(*getData);
+        }
+
+        fileToRead.close();
+    }
+    else
+    {
+        cout << "Error 1" << endl;
+    }
 }

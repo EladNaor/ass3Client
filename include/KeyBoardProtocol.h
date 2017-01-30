@@ -23,6 +23,8 @@ public:
     void operator()();
 
     void run();
+
+    void writeFileIntoQueue(string basic_string);
 };
 
 

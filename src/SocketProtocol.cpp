@@ -50,9 +50,10 @@ void SocketProtocol::run() {
                         stayConnected = false;
                     } else if(!action.compare("logrq")==0) {
                         if(!devidedDataBlocks.empty()) {
-                            data = *(answer->getData());
-                            pack.createDATApacket((short) (answer->getBlockNumber() + 1), (short) data.size(), data);
+                            data = devidedDataBlocks.front();
+                            pack.createDATApacket((short) data.size(),(short) (answer->getBlockNumber() + 1), data);
                             connectionHandler->sendPacketToSocket(&pack);
+                            devidedDataBlocks.pop();
                         }
                     }
                     break;
