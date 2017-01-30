@@ -29,10 +29,11 @@ void SocketProtocol::run() {
             short opcode = answer->getOpCode();
             switch (opcode) {
                 case 3: {
-                    pack.createACKpacket(answer->getBlockNumber());
                     std::vector<char> data;
                     copy ( answer->getData()->begin(), answer->getData()->begin() + answer->getPacketSize(), std::back_inserter(data) );
                     devidedDataBlocks.push(data);
+                    pack.createACKpacket(answer->getBlockNumber());
+                    connectionHandler->sendPacketToSocket(&pack);
                     if (answer->getPacketSize() < 512) {
                         if (isReading) {
                             createFileFromQueue();
@@ -50,7 +51,7 @@ void SocketProtocol::run() {
                     } else if(!action.compare("logrq")==0) {
                         if(!devidedDataBlocks.empty()) {
                             data = *(answer->getData());
-                            pack.createDATApacket((short) answer->getBlockNumber() + 1, (short) data.size(), data);
+                            pack.createDATApacket((short) (answer->getBlockNumber() + 1), (short) data.size(), data);
                             connectionHandler->sendPacketToSocket(&pack);
                         }
                     }

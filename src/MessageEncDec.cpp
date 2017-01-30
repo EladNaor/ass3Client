@@ -70,7 +70,7 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
                 if ((short) counter <= packetSize) {
                     data->at(counter) = nextByte;
                     counter++;
-                    if ((short) counter == packetSize) {
+                    if ((short) counter >= packetSize) {
                         p = new Packet();
                         p->createDATApacket(packetSize, blockNumber, *data);
                         dataInit();
