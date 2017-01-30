@@ -128,11 +128,18 @@ Packet *MessageEncDec::decodeNextByte(char nextByte) {
                 j++;
                 return nullptr;
             }
-            if (nextByte != 0) {
+
+            else if (j == 0 && nextByte == 0) {
+                delOrAdd = false;
+                j++;
+                return nullptr;
+            }
+            else if (nextByte != 0 && j>0) {
                 charBuffer->at(j - 1) = nextByte;
                 j++;
                 return nullptr;
-            } else {
+            }
+            else if(j>0){
                 string fileName = charBufferToString(charBuffer);
                 p = new Packet();
                 p->createBCASTpacket(delOrAdd, fileName);
