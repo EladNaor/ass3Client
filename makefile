@@ -1,34 +1,29 @@
-PROGRAM = TFTPclient
+CFLAGS:=-c -Wall -Weffc++ -Werror -g -std=c++11 -I ./include -isystem /usr/include
+LDFLAGS:=-lboost_system -lboost_locale -lboost_thread
 
-SRCS = 	ConnectionHandler.cpp \
-		KeyBoardProtocol.cpp \
-		MainClient.cpp \
-		MessageEncDec.cpp \
-		Packet.cpp \
-		SocketProtocol.cpp
+all: Client
+	g++ -L/usr/lib -o bin/Client bin/ConnectionHandler.o bin/KeyBoardProtocol.o bin/MainClient.o bin/MessageEncDec.o bin/Packet.o bin/SocketProtocol.o $(LDFLAGS)
 
-SRCDIR = src
-BINDIR = bin
+Client: bin/ConnectionHandler.o bin/KeyBoardProtocol.o bin/MainClient.o bin/MessageEncDec.o bin/Packet.o bin/SocketProtocol.o
+	
+bin/ConnectionHandler.o: src/ConnectionHandler.cpp
+	g++ $(CFLAGS) -o bin/ConnectionHandler.o src/ConnectionHandler.cpp
 
-OBJS = $(SRCS:%.cpp=$(BINDIR)/%.o)
+bin/KeyBoardProtocol.o: src/KeyBoardProtocol.cpp
+	g++ $(CFLAGS) -o bin/KeyBoardProtocol.o src/KeyBoardProtocol.cpp
 
-CC = g++
+bin/MainClient.o: src/MainClient.cpp
+	g++ $(CFLAGS) -o bin/MainClient.o src/MainClient.cpp
 
-CFLAGS = -g -std=c++11 -Wall -Weffc++ -Werror
-LFLAGS = -L/usr/lib
+bin/MessageEncDec.o: src/MessageEncDec.cpp
+	g++ $(CFLAGS) -o bin/MessageEncDec.o src/MessageEncDec.cpp
 
-INCLUDES = -I./include -I./include/Packet -isystem /usr/include
-LIBS = -lboost_locale -lboost_system -lboost_thread
+bin/Packet.o: src/Packet.cpp
+	g++ $(CFLAGS) -o bin/Packet.o src/Packet.cpp
 
-.PHONY: all
-all: $(PROGRAM)
-
-$(PROGRAM): $(OBJS)
-	$(CC) $(LFLAGS) -o $(BINDIR)/$(PROGRAM) $+ $(LIBS)
-
-$(BINDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
-
+bin/SocketProtocol.o: src/SocketProtocol.cpp
+	g++ $(CFLAGS) -o bin/SocketProtocol.o src/SocketProtocol.cpp
+	
 .PHONY: clean
 clean:
-	rm -rf $(BINDIR)/*
+	rm -f bin/*
