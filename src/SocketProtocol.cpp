@@ -1,4 +1,4 @@
-#include <boost/thread/win32/thread_data.hpp>
+#include <boost/thread.hpp>
 #include <io.h>
 #include <vector>
 #include <bits/ios_base.h>

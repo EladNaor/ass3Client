@@ -1,6 +1,6 @@
 
 
-#include <boost/thread/win32/thread_data.hpp>
+#include <boost/thread.hpp>
 #include "../include/KeyBoardProtocol.h"
 #include "../include/Packet.h"
 #include "../include/SocketProtocol.h"
@@ -110,7 +110,7 @@ void KeyBoardProtocol::run() {
             }
             else
             {
-                //so the keyboard thread won't do the main while again
+                //so the keyboard thread won't do the lmain while again
                 // and get stuck waiting for input
                 while (SocketProtocol::stayConnected && SocketProtocol::action.compare("disc")==0) {}
             }
