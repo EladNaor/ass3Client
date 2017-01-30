@@ -38,6 +38,9 @@ void SocketProtocol::run() {
                         if (isReading) {
                             createFileFromQueue();
                             cout<< "RRQ " << fileName << " complete" << endl;
+                            action = "resting";
+                            fileName = "";
+                            isReading = false;
                         } else {
                             printDirq();
                         }
@@ -55,6 +58,15 @@ void SocketProtocol::run() {
                             connectionHandler->sendPacketToSocket(&pack);
                             devidedDataBlocks.pop();
                         }
+                        else
+                        {
+                            cout << "WRQ " + fileName + " complete" << endl;
+                            fileName = "";
+                            action = "resting";
+                        }
+                    } else
+                    {
+                        action = "resting";
                     }
                     break;
                 }
@@ -62,6 +74,11 @@ void SocketProtocol::run() {
 
                 case 5: {
                     cout << "Error " << answer->getErrCode() << endl;
+                    action = "resting";
+                    stayConnected = true;
+                    isReading = false;
+                    fileName = "";
+                    devidedDataBlocks = queue<vector<char>>();
                     break;
                 }
 
